@@ -39,14 +39,30 @@ const LandingSearch = ({
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[120px] pointer-events-none -z-10 rounded-full" />
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-cyan-500/5 blur-[90px] pointer-events-none -z-10 rounded-full" />
       
-      {/* Hero Header Section */}
+      {/* Hero Header Section with Brand & Circular Image */}
       <div className="text-center max-w-2xl mx-auto space-y-3 mb-8 sm:mb-12">
-        {/* Big OP.GG Style Brand Logo */}
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center justify-center">
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
-            LeeeL.GG
-          </span>
-        </h1>
+        <div className="flex items-center justify-center space-x-3 sm:space-x-4">
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center">
+            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
+              LeeeL.GG
+            </span>
+          </h1>
+          {/* Clickable Circular Avatar */}
+          <a
+            href="https://vod.sooplive.com/player/164717847/catch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex cursor-pointer transition transform hover:scale-110"
+            title="SOOP 다시보기 보러가기"
+          >
+            <img
+              src="./assets/leeel_profile.png"
+              alt="LeeeL"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 sm:border-[3px] border-cyan-400/90 shadow-xl shadow-cyan-500/30 group-hover:border-cyan-300 group-hover:shadow-cyan-400/70 transition duration-200"
+            />
+            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse"></span>
+          </a>
+        </div>
       </div>
 
       {/* Main OP.GG Search Box Container */}

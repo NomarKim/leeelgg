@@ -18,10 +18,26 @@ const Header = ({ onGoHome, onSync, loading, isHome = false, appliedPlayer = "" 
           <div className="bg-gradient-to-tr from-cyan-500 to-indigo-600 p-2 rounded-lg shadow-lg group-hover:shadow-cyan-500/30 transition">
             <LayersIcon size={20} />
           </div>
-          <div>
+          <div className="flex items-center space-x-2.5">
             <h1 className="text-xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
               LeeeL.GG
             </h1>
+            {/* Clickable circular profile image */}
+            <a
+              href="https://vod.sooplive.com/player/164717847/catch"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="relative group/avatar inline-flex items-center cursor-pointer"
+              title="SOOP 다시보기 보러가기"
+            >
+              <img
+                src="./assets/leeel_profile.png"
+                alt="LeeeL"
+                className="w-7 h-7 rounded-full object-cover border-2 border-cyan-400/80 shadow-md shadow-cyan-500/20 group-hover/avatar:border-cyan-300 group-hover/avatar:scale-115 group-hover/avatar:shadow-cyan-400/60 transition-all duration-200"
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse"></span>
+            </a>
           </div>
         </div>
 
