@@ -7,7 +7,7 @@ const LandingSearch = ({
   initialEndDate
 }) => {
   const { useState, useMemo } = React;
-  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, TrophyIcon, ArrowRightIcon } = window.Icons;
+  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, ArrowRightIcon } = window.Icons;
 
   const [inputName, setInputName] = useState("");
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -235,35 +235,13 @@ const LandingSearch = ({
           </div>
         </div>
 
-        {/* Card 3: LeeeL's Award (개발 예정) */}
+        {/* Card 3: 개발 예정 (제목/이름/내용 완전 제거) */}
         <div 
-          onClick={() => onNavigate("award")}
-          className="group bg-slate-900/60 hover:bg-slate-900/90 border border-slate-800/80 hover:border-amber-500/40 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.01] shadow-xl backdrop-blur-sm relative overflow-hidden"
+          className="bg-slate-900/30 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg select-none min-h-[220px]"
         >
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400/80 group-hover:scale-110 transition duration-300">
-                <TrophyIcon size={24} />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-500/30 flex items-center space-x-1">
-                <span>🔒 개발 예정</span>
-              </span>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white/90 group-hover:text-amber-300 transition flex items-center space-x-2">
-                <span>LeeeL's Award</span>
-              </h3>
-              <p className="text-xs text-amber-400/90 font-semibold mt-0.5">명예의 전당 (Coming Soon)</p>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                새로운 시즌 명예의 전당과 특별 어워드 기능이 곧 공개될 예정입니다.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400/80 group-hover:translate-x-1 transition">
-            <span>COMING SOON</span>
-            <ArrowRightIcon size={15} />
-          </div>
+          <span className="text-sm font-bold text-slate-500 tracking-wider">
+            개발 예정
+          </span>
         </div>
 
       </div>
