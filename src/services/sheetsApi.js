@@ -1,4 +1,4 @@
-// Google Sheets GViz JSONP API Service
+// Google Sheets GViz Service with Smart Hybrid Proxy
 window.SheetsApi = {
   loadJSONP: (ssId, gid, callbackName) => {
     return new Promise((resolve, reject) => {
@@ -93,7 +93,31 @@ window.SheetsApi = {
     return matches;
   },
 
+  // Smart Hybrid Live Data Loader:
+  // - On Production (Vercel): Uses /api/data (100% Sheet URL Hidden + Fast Edge Cache)
+  // - On Localhost / file:// / Fallback: Uses client-side JSONP for seamless local testing
   loadAllDataLive: async () => {
+    const isLocal = window.location.hostname === "localhost" || 
+                    window.location.hostname === "127.0.0.1" || 
+                    window.location.protocol === "file:";
+
+    // 1. Production Mode: Fetch via secure Vercel API proxy
+    if (!isLocal) {
+      try {
+        const res = await fetch("/api/data");
+        if (res.ok) {
+          const liveData = await res.json();
+          if (liveData && liveData.players && liveData.matches) {
+            console.log("⚡ Loaded data via secure /api/data proxy with edge cache");
+            return liveData;
+          }
+        }
+      } catch (err) {
+        console.warn("Production /api/data proxy failed, falling back to direct JSONP:", err);
+      }
+    }
+
+    // 2. Local Dev Mode & Fallback: Direct JSONP
     const ssId = atob(window.CONFIG.OBFUSCATED_SS_ID);
     const [userData, tpData, gameData] = await Promise.all([
       window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.USER, "handleUserData"),
