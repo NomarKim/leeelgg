@@ -1,12 +1,13 @@
-// OP.GG Style Home Landing Page Component
+// OP.GG Style Home Landing Page Component with 3 Category Cards
 const LandingSearch = ({ 
   allPlayerNames = [],
   onSearch,
+  onNavigate,
   initialStartDate,
   initialEndDate
 }) => {
   const { useState, useMemo } = React;
-  const { SearchIcon, CalendarIcon } = window.Icons;
+  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, TrophyIcon, ArrowRightIcon } = window.Icons;
 
   const [inputName, setInputName] = useState("");
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -33,14 +34,14 @@ const LandingSearch = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12 lg:py-24 relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10 sm:py-16 relative overflow-hidden">
       
       {/* Background Ambient Glows */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[120px] pointer-events-none -z-10 rounded-full" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[120px] pointer-events-none -z-10 rounded-full" />
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-cyan-500/5 blur-[90px] pointer-events-none -z-10 rounded-full" />
       
       {/* Hero Header Section - Clean Centered LeeeL.GG */}
-      <div className="text-center max-w-2xl mx-auto space-y-3 mb-8 sm:mb-12">
+      <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-10">
         <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center justify-center">
           <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
             LeeeL.GG
@@ -167,6 +168,104 @@ const LandingSearch = ({
             </div>
           </div>
         </form>
+      </div>
+
+      {/* 3 Main Category Shortcut Cards */}
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16">
+        
+        {/* Card 1: LeeeL's Guide (시참 규칙) */}
+        <div 
+          onClick={() => onNavigate("guide")}
+          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-sky-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-sky-500/10 backdrop-blur-sm"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition duration-300">
+                <BookOpenIcon size={24} />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-500/30">
+                GUIDE
+              </span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-sky-300 transition">
+                LeeeL's Guide
+              </h3>
+              <p className="text-xs text-sky-400 font-semibold mt-0.5">리엘 방 소개 & 시참 규칙</p>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                팬참, 디코 마이크, 멸망전 점수표 밸런스 등 내전 필수 시참 룰 안내
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-sky-400 group-hover:translate-x-1 transition">
+            <span>시참 규칙 보기</span>
+            <ArrowRightIcon size={15} />
+          </div>
+        </div>
+
+        {/* Card 2: LeeeL's Record */}
+        <div 
+          onClick={() => onNavigate("analytics")}
+          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-cyan-500/10 backdrop-blur-sm"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 group-hover:scale-110 transition duration-300">
+                <BarChartIcon size={24} />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/30">
+                RECORD
+              </span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition">
+                LeeeL's Record
+              </h3>
+              <p className="text-xs text-cyan-400 font-semibold mt-0.5">실시간 내전 전적 & 티어 분석</p>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                5개 라인별 TP 점수, 진영별 전적 통계와 맞라인 10경기 로그를 분석합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-cyan-400 group-hover:translate-x-1 transition">
+            <span>전적 검색하기</span>
+            <ArrowRightIcon size={15} />
+          </div>
+        </div>
+
+        {/* Card 3: LeeeL's Award (개발 예정) */}
+        <div 
+          onClick={() => onNavigate("award")}
+          className="group bg-slate-900/60 hover:bg-slate-900/90 border border-slate-800/80 hover:border-amber-500/40 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.01] shadow-xl backdrop-blur-sm relative overflow-hidden"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400/80 group-hover:scale-110 transition duration-300">
+                <TrophyIcon size={24} />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-500/30 flex items-center space-x-1">
+                <span>🔒 개발 예정</span>
+              </span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white/90 group-hover:text-amber-300 transition flex items-center space-x-2">
+                <span>LeeeL's Award</span>
+              </h3>
+              <p className="text-xs text-amber-400/90 font-semibold mt-0.5">명예의 전당 (Coming Soon)</p>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                새로운 시즌 명예의 전당과 특별 어워드 기능이 곧 공개될 예정입니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400/80 group-hover:translate-x-1 transition">
+            <span>COMING SOON</span>
+            <ArrowRightIcon size={15} />
+          </div>
+        </div>
+
       </div>
 
     </div>

@@ -7,7 +7,7 @@ function App() {
 
   const defaultDates = useMemo(() => getDefaultDateRange(7), []);
 
-  // Application View: "home" (OP.GG Landing) | "analytics" (Dashboard)
+  // Application View: "home" | "analytics" (LeeeL's Record) | "guide" (LeeeL's Guide) | "award" (LeeeL's Award)
   const [view, setView] = useState("home");
   const [data, setData] = useState(window.MOCK_DATA || { players: [], tpRules: {}, matches: [] });
   const [loading, setLoading] = useState(false);
@@ -57,8 +57,9 @@ function App() {
 
   // Navigate from Home Landing Page to Analytics Dashboard
   const handleSearchFromHome = (playerName, start, end) => {
-    setAppliedPlayer(playerName);
-    setSearchName(playerName);
+    const target = playerName || window.CONFIG.DEFAULT_PLAYER || "리엘";
+    setAppliedPlayer(target);
+    setSearchName(target);
     if (start) {
       setStartDate(start);
       setAppliedStartDate(start);
@@ -249,14 +250,39 @@ function App() {
       />
 
       {/* Screen Views */}
-      {view === "home" ? (
+      {view === "home" && (
         <window.LandingSearch
           allPlayerNames={allPlayerNames}
           onSearch={handleSearchFromHome}
+          onNavigate={(targetView) => {
+            if (targetView === "analytics") {
+              handleSearchFromHome(searchName, startDate, endDate);
+            } else {
+              setView(targetView);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
           initialStartDate={startDate}
           initialEndDate={endDate}
         />
-      ) : (
+      )}
+
+      {view === "guide" && (
+        <window.GuidePage
+          onGoHome={handleGoHome}
+          onNavigateToRecord={() => handleSearchFromHome(searchName, startDate, endDate)}
+        />
+      )}
+
+      {view === "award" && (
+        <window.AwardPage
+          onGoHome={handleGoHome}
+          data={data}
+          onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
+        />
+      )}
+
+      {view === "analytics" && (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-200">
           {/* Top Filter Bar */}
           <window.SearchFilter
