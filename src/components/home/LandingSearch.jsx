@@ -39,32 +39,13 @@ const LandingSearch = ({
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[120px] pointer-events-none -z-10 rounded-full" />
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-cyan-500/5 blur-[90px] pointer-events-none -z-10 rounded-full" />
       
-      {/* Hero Header Section with Left Avatar + LeeeL.GG */}
+      {/* Hero Header Section - Clean Centered LeeeL.GG */}
       <div className="text-center max-w-2xl mx-auto space-y-3 mb-8 sm:mb-12">
-        <div className="flex items-center justify-center space-x-3.5 sm:space-x-5">
-          {/* Circular Profile Avatar on the LEFT */}
-          <a
-            href="https://vod.sooplive.com/player/164717847/catch"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative inline-flex cursor-pointer transition transform hover:scale-110"
-            title="SOOP 다시보기 보러가기"
-          >
-            <img
-              src="./assets/leeel_profile.png"
-              alt="LeeeL"
-              className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover border-2 sm:border-[3px] border-cyan-400 shadow-2xl shadow-cyan-500/30 group-hover:border-cyan-300 group-hover:shadow-cyan-400/70 transition duration-200"
-            />
-            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse"></span>
-          </a>
-
-          {/* Title */}
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center">
-            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
-              LeeeL.GG
-            </span>
-          </h1>
-        </div>
+        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center justify-center">
+          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
+            LeeeL.GG
+          </span>
+        </h1>
       </div>
 
       {/* Main OP.GG Search Box Container */}
