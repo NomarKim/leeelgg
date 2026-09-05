@@ -254,7 +254,7 @@ const LandingSearch = ({
                 </div>
               </button>
 
-              {/* Menu 2: 라인별 승률 랭킹 */}
+              {/* Menu 2: 티조위 검거 시트 */}
               <button
                 type="button"
                 onClick={(e) => {
@@ -269,10 +269,10 @@ const LandingSearch = ({
                   </div>
                   <div>
                     <div className="text-xs font-bold text-slate-200 group-hover/btn:text-amber-300 transition">
-                      라인별 승률 랭킹
+                      티조위 검거 시트
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
-                      5개 라인 TOP 10 & WORST 10
+                      최근 2주간 라인별 전적 순위 통한 미리 검거
                     </div>
                   </div>
                 </div>

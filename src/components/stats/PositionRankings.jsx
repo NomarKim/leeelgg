@@ -103,13 +103,13 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
         <div>
           <div className="flex items-center space-x-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
             <TrophyIcon size={16} />
-            <span>포지션별 랭킹 보드</span>
+            <span>🚨 티어 조정 위원회</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            라인별 승률 랭킹 (TOP 10 & WORST 10)
+            티조위 검거 시트 (TOP 10 & WORST 10)
           </h3>
           <p className="text-xs text-slate-400 mt-1">
-            최소 5판 이상 기준 (승률 50% 이상 TOP 10 / 승률 50% 이하 WORST 10)
+            최근 2주간 라인별 전적 순위를 통한 미리 검거 (최소 5판 이상 기준)
           </p>
         </div>
 
