@@ -274,10 +274,11 @@ function App() {
         />
       )}
 
-      {view === "award" && (
+      {(view === "award" || view === "champion-award") && (
         <window.AwardPage
           onGoHome={handleGoHome}
           data={data}
+          initialView={view === "champion-award" ? "champion" : "hub"}
           onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
           onNavigateAwardSub={(subView) => {
             setView(subView);

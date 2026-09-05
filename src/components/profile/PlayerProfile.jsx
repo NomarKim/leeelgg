@@ -14,11 +14,6 @@ const PlayerProfile = ({ profile }) => {
           <div>
             <div className="flex items-center space-x-3">
               <h2 className="text-2xl sm:text-3xl font-black text-slate-100">{profile.gameId}</h2>
-              {profile.afreecaId && profile.afreecaId !== "확인" && (
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                  방송: {profile.afreecaId}
-                </span>
-              )}
             </div>
             <p className="text-sm text-slate-400 mt-1">
               {profile.notes && profile.notes !== "확인" && profile.notes !== "DB(user)2 미등록 유저" 

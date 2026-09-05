@@ -284,14 +284,13 @@ const LandingSearch = ({
           </div>
         </div>
 
-        {/* Card 3: LeeeL's Award (챔피언별 장인 랭킹) */}
+        {/* Card 3: LeeeL's Award (올해의 유저, 이 달의 유저, 이 주의 유저 하위 메뉴 리스트) */}
         <div 
-          onClick={() => onNavigate("award")}
-          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-amber-500/10 backdrop-blur-sm"
+          className="group/card bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl backdrop-blur-sm transition-all duration-300"
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:scale-110 transition duration-300">
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover/card:scale-110 transition duration-300">
                 <TrophyIcon size={24} />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-500/30">
@@ -299,19 +298,124 @@ const LandingSearch = ({
               </span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition">
+              <h3 className="text-lg font-bold text-white group-hover/card:text-amber-300 transition">
                 LeeeL's Award
               </h3>
-              <p className="text-xs text-amber-400 font-semibold mt-0.5">챔피언별 장인 랭킹</p>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                티어별, 챔피언별, 판수 조건 필터로 내전 최고의 장인 랭커를 조회합니다.
-              </p>
+              <p className="text-xs text-amber-400 font-semibold mt-0.5">명예의 전당 & 어워드</p>
             </div>
-          </div>
 
-          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400 group-hover:translate-x-1 transition">
-            <span>장인 랭킹 보기</span>
-            <ArrowRightIcon size={15} />
+            {/* 하위 3개 어워드 메뉴 버튼 리스트 */}
+            <div className="space-y-2 pt-1">
+              
+              {/* Menu 1: 올해의 유저 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("yearly-award");
+                }}
+                className="w-full text-left p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-amber-950/30"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-amber-500/20 transition duration-200">
+                    <TrophyIcon size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-amber-300 transition">
+                      올해의 유저
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      연도별 시참왕 & 승률왕
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-amber-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={14} />
+                </div>
+              </button>
+
+              {/* Menu 2: 이 달의 유저 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("monthly-award");
+                }}
+                className="w-full text-left p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-indigo-950/30"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-indigo-500/20 transition duration-200">
+                    <SparklesIcon size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-indigo-300 transition">
+                      이 달의 유저
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      월별 시참왕 & 승률왕
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-indigo-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={14} />
+                </div>
+              </button>
+
+              {/* Menu 3: 이 주의 유저 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("weekly-award");
+                }}
+                className="w-full text-left p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-rose-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-rose-950/30"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-rose-500/20 transition duration-200">
+                    <FlameIcon size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-rose-300 transition">
+                      이 주의 유저
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      주차별 시참왕 & 승률왕
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-rose-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={14} />
+                </div>
+              </button>
+
+              {/* Menu 4: 챔피언별 장인 랭킹 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("champion-award");
+                }}
+                className="w-full text-left p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-cyan-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-cyan-950/30"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 transition duration-200">
+                    <ShieldIcon size={14} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-cyan-300 transition">
+                      챔피언별 장인 랭킹
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      티어·챔프·판수 필터 장인 조회
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-cyan-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={14} />
+                </div>
+              </button>
+
+            </div>
           </div>
         </div>
 

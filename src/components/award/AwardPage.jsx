@@ -1,5 +1,5 @@
 // LeeeL's Award - 명예의 전당 허브 (올해의 유저, 이 달의 유저, 이 주의 유저, 챔피언 장인 랭킹)
-const AwardPage = ({ data = { matches: [], players: [] }, onGoHome, onSearchPlayer, onNavigateAwardSub }) => {
+const AwardPage = ({ data = { matches: [], players: [] }, onGoHome, onSearchPlayer, onNavigateAwardSub, initialView = "champion" }) => {
   const { useState, useMemo } = React;
   const { TrophyIcon, FlameIcon, ShieldIcon, SparklesIcon, SearchIcon, ArrowLeftIcon, ArrowRightIcon, CalendarIcon, CheckIcon } = window.Icons;
 
@@ -7,7 +7,7 @@ const AwardPage = ({ data = { matches: [], players: [] }, onGoHome, onSearchPlay
   const players = data.players || [];
 
   // Sub-view mode inside Award: "hub" | "champion"
-  const [awardView, setAwardView] = useState("hub");
+  const [awardView, setAwardView] = useState(initialView);
 
   // -------------------------------------------------------------
   // Champion Specialist Filter & Ranking Logic (when view is champion)
