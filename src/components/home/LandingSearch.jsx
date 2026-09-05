@@ -284,13 +284,35 @@ const LandingSearch = ({
           </div>
         </div>
 
-        {/* Card 3: 개발 예정 */}
+        {/* Card 3: LeeeL's Award (챔피언별 장인 랭킹) */}
         <div 
-          className="bg-slate-900/30 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg select-none min-h-[220px]"
+          onClick={() => onNavigate("award")}
+          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-amber-500/10 backdrop-blur-sm"
         >
-          <span className="text-sm font-bold text-slate-500 tracking-wider">
-            개발 예정
-          </span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:scale-110 transition duration-300">
+                <TrophyIcon size={24} />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-500/30">
+                AWARD
+              </span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition">
+                LeeeL's Award
+              </h3>
+              <p className="text-xs text-amber-400 font-semibold mt-0.5">챔피언별 장인 랭킹</p>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                티어별, 챔피언별, 판수 조건 필터로 내전 최고의 장인 랭커를 조회합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400 group-hover:translate-x-1 transition">
+            <span>장인 랭킹 보기</span>
+            <ArrowRightIcon size={15} />
+          </div>
         </div>
 
       </div>
