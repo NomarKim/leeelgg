@@ -1,10 +1,10 @@
-// Line-by-line Winrate Rankings Component (All 5 positions at once, Top 10 & Worst 10)
+// Line-by-line Winrate Rankings Component (All 5 positions, Top 10 >=50% & Worst 10 <=50%, Min 5 games)
 const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑", "정글", "미드", "원딜", "서폿"], onGoHome }) => {
   const { useState, useMemo } = React;
   const { TrophyIcon, FlameIcon, ShieldIcon, CalendarIcon, UserIcon, ArrowRightIcon, ArrowLeftIcon } = window.Icons;
   const { parseGameDate } = window.DateUtils;
 
-  // Selected period: "1week" (min 5 games) | "2weeks" (min 10 games)
+  // Selected period: "1week" (7 days) | "2weeks" (14 days) - both require min 5 games
   const [period, setPeriod] = useState("1week");
 
   // Determine latest match date to anchor the 1-week / 2-week calculation
@@ -20,7 +20,7 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
 
   // Compute rankings for each position
   const rankingsByPosition = useMemo(() => {
-    const minGames = period === "1week" ? 5 : 10;
+    const minGames = 5; // 1주/2주 둘 다 최소 5판
     const daysAgo = period === "1week" ? 7 : 14;
     
     // Calculate cutoff date (latestMatchDate minus N days)
@@ -59,7 +59,7 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
         }
       });
 
-      // Filter by minimum games and calculate winrate
+      // Filter by minimum 5 games and calculate winrate
       const qualified = Object.values(statsMap)
         .filter(p => p.total >= minGames)
         .map(p => ({
@@ -67,19 +67,25 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
           winRate: p.total > 0 ? Math.round((p.wins / p.total) * 100) : 0
         }));
 
-      // Top 10 (highest winrate first)
-      const top10 = [...qualified].sort((a, b) => {
-        if (b.winRate !== a.winRate) return b.winRate - a.winRate;
-        if (b.total !== a.total) return b.total - a.total;
-        return b.wins - a.wins;
-      }).slice(0, 10);
+      // Top 10: 승률 50% 이상만 (highest winrate first)
+      const top10 = qualified
+        .filter(p => p.winRate >= 50)
+        .sort((a, b) => {
+          if (b.winRate !== a.winRate) return b.winRate - a.winRate;
+          if (b.total !== a.total) return b.total - a.total;
+          return b.wins - a.wins;
+        })
+        .slice(0, 10);
 
-      // Worst 10 (lowest winrate first)
-      const worst10 = [...qualified].sort((a, b) => {
-        if (a.winRate !== b.winRate) return a.winRate - b.winRate;
-        if (b.total !== a.total) return b.total - a.total;
-        return a.wins - b.wins;
-      }).slice(0, 10);
+      // Worst 10: 승률 50% 이하만 (lowest winrate first)
+      const worst10 = qualified
+        .filter(p => p.winRate <= 50)
+        .sort((a, b) => {
+          if (a.winRate !== b.winRate) return a.winRate - b.winRate;
+          if (b.total !== a.total) return b.total - a.total;
+          return a.wins - b.wins;
+        })
+        .slice(0, 10);
 
       result[posName] = { top10, worst10, totalQualified: qualified.length, minGames };
     });
@@ -103,7 +109,7 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
             라인별 승률 랭킹 (TOP 10 & WORST 10)
           </h3>
           <p className="text-xs text-slate-400 mt-1">
-            탑 / 정글 / 미드 / 원딜 / 서폿 5개 라인별 최고 승률 및 최하위 승률 유저 목록
+            최소 5판 이상 기준 (승률 50% 이상 TOP 10 / 승률 50% 이하 WORST 10)
           </p>
         </div>
 
@@ -128,7 +134,7 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              최근 2주일 (최소 10판)
+              최근 2주일 (최소 5판)
             </button>
           </div>
 
@@ -164,23 +170,23 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
                   </span>
                 </div>
                 <span className="text-xs text-slate-400 font-medium">
-                  집계 조건: 최소 <strong className="text-cyan-400">{minGames}판</strong> 이상 ({totalQualified}명 충족)
+                  집계 대상: 최소 <strong className="text-cyan-400">{minGames}판</strong> 이상 ({totalQualified}명 충족)
                 </span>
               </div>
 
-              {/* 2-Column Table Grid: Top 10 & Worst 10 */}
+              {/* 2-Column Table Grid: Top 10 (>=50%) & Worst 10 (<=50%) */}
               <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                {/* 1. TOP 10 Table */}
+                {/* 1. TOP 10 Table (>= 50%) */}
                 <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
                       <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
                         <FlameIcon size={14} />
-                        <span>🔥 {posName} 승률 TOP 10 (상위 10명)</span>
+                        <span>🔥 {posName} 승률 TOP 10 (50% 이상)</span>
                       </h4>
                       <span className="text-[10px] text-cyan-400/80 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/20 font-bold">
-                        승률 높은 순
+                        승률 50% 이상 (최대 10명)
                       </span>
                     </div>
 
@@ -218,21 +224,21 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
                       </table>
                     ) : (
                       <div className="py-8 text-center text-slate-500 text-xs">
-                        최소 {minGames}판 이상 플레이한 {posName} 유저가 아직 없습니다.
+                        최소 {minGames}판 이상 플레이하고 승률 50% 이상인 {posName} 유저가 없습니다.
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* 2. WORST 10 Table */}
+                {/* 2. WORST 10 Table (<= 50%) */}
                 <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
                       <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center space-x-1.5">
-                        <span>🧊 {posName} 승률 WORST 10 (하위 10명)</span>
+                        <span>🧊 {posName} 승률 WORST 10 (50% 이하)</span>
                       </h4>
                       <span className="text-[10px] text-rose-400/80 bg-rose-950 px-2 py-0.5 rounded border border-rose-500/20 font-bold">
-                        승률 낮은 순
+                        승률 50% 이하 (최대 10명)
                       </span>
                     </div>
 
@@ -270,7 +276,7 @@ const PositionRankings = ({ matches = [], onSelectPlayer, positionsList = ["탑"
                       </table>
                     ) : (
                       <div className="py-8 text-center text-slate-500 text-xs">
-                        최소 {minGames}판 이상 플레이한 {posName} 유저가 아직 없습니다.
+                        최소 {minGames}판 이상 플레이하고 승률 50% 이하인 {posName} 유저가 없습니다.
                       </div>
                     )}
                   </div>
