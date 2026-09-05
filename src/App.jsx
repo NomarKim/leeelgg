@@ -279,6 +279,46 @@ function App() {
           onGoHome={handleGoHome}
           data={data}
           onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
+          onNavigateAwardSub={(subView) => {
+            setView(subView);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      )}
+
+      {view === "yearly-award" && (
+        <window.YearlyAwardPage
+          data={data}
+          onGoHome={handleGoHome}
+          onGoAwardHub={() => {
+            setView("award");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
+        />
+      )}
+
+      {view === "monthly-award" && (
+        <window.MonthlyAwardPage
+          data={data}
+          onGoHome={handleGoHome}
+          onGoAwardHub={() => {
+            setView("award");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
+        />
+      )}
+
+      {view === "weekly-award" && (
+        <window.WeeklyAwardPage
+          data={data}
+          onGoHome={handleGoHome}
+          onGoAwardHub={() => {
+            setView("award");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
         />
       )}
 
