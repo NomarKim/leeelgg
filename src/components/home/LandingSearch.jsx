@@ -7,7 +7,7 @@ const LandingSearch = ({
   initialEndDate
 }) => {
   const { useState, useMemo } = React;
-  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, ArrowRightIcon } = window.Icons;
+  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, TrophyIcon, ArrowRightIcon } = window.Icons;
 
   const [inputName, setInputName] = useState("");
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -204,14 +204,14 @@ const LandingSearch = ({
           </div>
         </div>
 
-        {/* Card 2: LeeeL's Record */}
+        {/* Card 2: LeeeL's Record (하위 2개 메뉴 리스트) */}
         <div 
-          onClick={() => onNavigate("analytics")}
-          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-cyan-500/10 backdrop-blur-sm"
+          onClick={() => onNavigate("analytics", inputName, startDate, endDate)}
+          className="group/card bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl backdrop-blur-sm transition-all duration-300 cursor-pointer"
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 group-hover:scale-110 transition duration-300">
+              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 group-hover/card:scale-110 transition duration-300">
                 <BarChartIcon size={24} />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/30">
@@ -219,23 +219,72 @@ const LandingSearch = ({
               </span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition">
+              <h3 className="text-lg font-bold text-white group-hover/card:text-cyan-300 transition">
                 LeeeL's Record
               </h3>
-              <p className="text-xs text-cyan-400 font-semibold mt-0.5">실시간 내전 전적 & 티어 분석</p>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                5개 라인별 TP 점수, 진영별 전적 통계와 맞라인 10경기 로그를 분석합니다.
-              </p>
+              <p className="text-xs text-cyan-400 font-semibold mt-0.5">실시간 내전 데이터 & 랭킹</p>
             </div>
-          </div>
 
-          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-cyan-400 group-hover:translate-x-1 transition">
-            <span>전적 검색하기</span>
-            <ArrowRightIcon size={15} />
+            {/* 하위 2개 클릭 메뉴 버튼 리스트 */}
+            <div className="space-y-2.5 pt-2">
+              {/* Menu 1: 소환사 전적 & 티어 조회 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("analytics", inputName, startDate, endDate);
+                }}
+                className="w-full text-left p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-cyan-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-cyan-950/30"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-cyan-500/20 transition duration-200">
+                    <BarChartIcon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-cyan-300 transition">
+                      소환사 전적 & 티어 조회
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      개인 승률 및 맞라인 10경기 분석
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-cyan-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={15} />
+                </div>
+              </button>
+
+              {/* Menu 2: 라인별 승률 랭킹 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("ranking");
+                }}
+                className="w-full text-left p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-amber-950/30"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-amber-500/20 transition duration-200">
+                    <TrophyIcon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-amber-300 transition">
+                      라인별 승률 랭킹
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      5개 라인 TOP 10 & WORST 10
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-amber-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={15} />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Card 3: 개발 예정 (제목/이름/내용 완전 제거) */}
+        {/* Card 3: 개발 예정 */}
         <div 
           className="bg-slate-900/30 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg select-none min-h-[220px]"
         >

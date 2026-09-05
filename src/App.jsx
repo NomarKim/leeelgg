@@ -254,9 +254,9 @@ function App() {
         <window.LandingSearch
           allPlayerNames={allPlayerNames}
           onSearch={handleSearchFromHome}
-          onNavigate={(targetView) => {
+          onNavigate={(targetView, customName, customStart, customEnd) => {
             if (targetView === "analytics") {
-              handleSearchFromHome(searchName, startDate, endDate);
+              handleSearchFromHome(customName || searchName, customStart || startDate, customEnd || endDate);
             } else {
               setView(targetView);
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -280,6 +280,19 @@ function App() {
           data={data}
           onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
         />
+      )}
+
+      {view === "ranking" && (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-200">
+          <window.PositionRankings
+            matches={data.matches}
+            positionsList={positionsList}
+            onGoHome={handleGoHome}
+            onSelectPlayer={(playerName) => {
+              handleSearchFromHome(playerName, startDate, endDate);
+            }}
+          />
+        </main>
       )}
 
       {view === "analytics" && (
