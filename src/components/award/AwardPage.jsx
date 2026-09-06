@@ -501,62 +501,184 @@ const AwardPage = ({ data = { matches: [], players: [] }, onGoHome, onSearchPlay
               조건을 설정하고 [장인 조회] 버튼을 눌러주세요!
             </h3>
             <p className="text-xs text-slate-400">
-              챔피언, 티어 범위, 최소 판수를 선택한 뒤 조회하시면 랭킹이 표시됩니다.
+              챔피언, 티어 범위, 최소 판수를 선택한 뒤 조회하시면 장인 포디움과 랭킹이 표시됩니다.
             </p>
           </div>
         </section>
       ) : (
-        <section className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl space-y-4">
-          <div className="px-6 py-5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-white">📋 장인 랭킹 목록 ({specialistRankings.length}명)</h3>
-            <div className="text-xs text-slate-400">
-              조건: <strong className="text-amber-400">{appliedChampFilter.champion}</strong> / 최소 <strong className="text-indigo-400">{appliedChampFilter.minGames}판</strong>
-            </div>
-          </div>
+        <div className="space-y-8 animate-in fade-in duration-300">
+          
+          {/* Top 3 Podium Cards */}
+          {specialistRankings.length > 0 && (
+            <section className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <TrophyIcon size={22} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-white">
+                      👑 {appliedChampFilter.champion === "전체" ? "전체 챔피언" : appliedChampFilter.champion} 장인 TOP 3 포디움
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      최소 {appliedChampFilter.minGames}판 이상 플레이한 유저 중 승률 및 판수 기준 최고 랭커
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/30">
+                  승률 & 판수 랭킹
+                </span>
+              </div>
 
-          {specialistRankings.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead>
-                  <tr className="text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-950/60 border-b border-slate-800">
-                    <th className="py-3 px-6 w-20">순위</th>
-                    <th className="py-3 px-6">소환사명</th>
-                    <th className="py-3 px-6">챔피언</th>
-                    <th className="py-3 px-6">주라인/티어</th>
-                    <th className="py-3 px-6 text-center">판수</th>
-                    <th className="py-3 px-6 text-center">승/패</th>
-                    <th className="py-3 px-6 text-right">승률</th>
-                    <th className="py-3 px-6 text-center">장인 칭호</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {specialistRankings.map((item, idx) => (
-                    <tr key={`${item.playerName}_${item.champion}_${idx}`} className="hover:bg-cyan-950/20 transition">
-                      <td className="py-4 px-6 font-extrabold text-slate-300">{idx === 0 ? "🥇 1위" : idx === 1 ? "🥈 2위" : idx === 2 ? "🥉 3위" : `${idx + 1}위`}</td>
-                      <td className="py-4 px-6">
-                        <button
-                          type="button"
-                          onClick={() => onSearchPlayer(item.playerName)}
-                          className="font-bold text-slate-100 hover:text-cyan-400 hover:underline transition"
-                        >
-                          {item.playerName} ↗
-                        </button>
-                      </td>
-                      <td className="py-4 px-6"><span className="font-extrabold text-amber-400 bg-amber-950/40 border border-amber-500/20 px-2.5 py-1 rounded-lg text-xs">{item.champion}</span></td>
-                      <td className="py-4 px-6 text-xs text-slate-300">{item.line} ({item.tier})</td>
-                      <td className="py-4 px-6 text-center font-bold text-slate-300">{item.total}전</td>
-                      <td className="py-4 px-6 text-center text-xs text-slate-400"><span className="text-emerald-400 font-bold">{item.wins}승</span> / <span className="text-rose-400 font-bold">{item.losses}패</span></td>
-                      <td className="py-4 px-6 text-right font-black text-base text-cyan-400">{item.winRate}%</td>
-                      <td className="py-4 px-6 text-center"><span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">{getRankBadgeTitle(item.winRate, item.total)}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="py-16 text-center text-slate-500 text-sm">해당 조건에 부합하는 장인 랭커가 없습니다.</div>
+              {/* Podium Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-end pt-2">
+                {/* 🥈 2위 */}
+                {top2 && (
+                  <div 
+                    onClick={() => onSearchPlayer(top2.playerName)}
+                    className="order-2 md:order-1 bg-slate-950/80 border border-slate-700/80 hover:border-slate-500 rounded-3xl p-6 shadow-xl relative overflow-hidden group cursor-pointer transition hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl font-black text-slate-300">🥈 2위</span>
+                      <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        {getRankBadgeTitle(top2.winRate, top2.total)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-xl font-black text-white group-hover:text-cyan-400 transition truncate">
+                        {top2.playerName}
+                      </span>
+                      <span className="text-xs font-extrabold text-amber-400 bg-amber-950/40 border border-amber-500/20 px-2 py-0.5 rounded-lg shrink-0">
+                        {top2.champion}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-400 mb-4">{top2.line} ({top2.tier})</div>
+                    <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+                      <div className="text-xs text-slate-400">
+                        <span className="text-emerald-400 font-bold">{top2.wins}승</span> <span className="text-rose-400 font-bold">{top2.losses}패</span> ({top2.total}전)
+                      </div>
+                      <div className="text-2xl font-black text-slate-200">{top2.winRate}%</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 🥇 1위 (장인왕) */}
+                {top1 && (
+                  <div 
+                    onClick={() => onSearchPlayer(top1.playerName)}
+                    className="order-1 md:order-2 bg-gradient-to-b from-amber-950/40 via-slate-950 to-slate-950 border-2 border-amber-500/60 hover:border-amber-400 rounded-3xl p-7 shadow-2xl shadow-amber-950/40 relative overflow-hidden group cursor-pointer transition hover:scale-[1.03] md:-translate-y-2"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-3xl font-black text-amber-400">🥇 1위 (장인왕)</span>
+                      <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500 text-slate-950 shadow-md">
+                        {getRankBadgeTitle(top1.winRate, top1.total)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2.5 mb-1.5">
+                      <span className="text-2xl font-black text-white group-hover:text-amber-300 transition truncate">
+                        {top1.playerName}
+                      </span>
+                      <span className="text-sm font-black text-amber-400 bg-amber-950/80 border border-amber-500/40 px-2.5 py-0.5 rounded-lg shrink-0">
+                        {top1.champion}
+                      </span>
+                    </div>
+                    <div className="text-xs text-amber-200/70 font-semibold mb-4">{top1.line} ({top1.tier})</div>
+                    <div className="mt-5 pt-4 border-t border-amber-500/20 flex items-center justify-between">
+                      <div className="text-sm text-slate-300 font-semibold">
+                        <span className="text-emerald-400 font-bold">{top1.wins}승</span> <span className="text-rose-400 font-bold">{top1.losses}패</span> ({top1.total}전)
+                      </div>
+                      <div className="text-3xl font-black text-amber-400">{top1.winRate}%</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 🥉 3위 */}
+                {top3 && (
+                  <div 
+                    onClick={() => onSearchPlayer(top3.playerName)}
+                    className="order-3 bg-slate-950/80 border border-amber-900/40 hover:border-amber-700/60 rounded-3xl p-6 shadow-xl relative overflow-hidden group cursor-pointer transition hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl font-black text-amber-600">🥉 3위</span>
+                      <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800">
+                        {getRankBadgeTitle(top3.winRate, top3.total)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-xl font-black text-white group-hover:text-cyan-400 transition truncate">
+                        {top3.playerName}
+                      </span>
+                      <span className="text-xs font-extrabold text-amber-400 bg-amber-950/40 border border-amber-500/20 px-2 py-0.5 rounded-lg shrink-0">
+                        {top3.champion}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-400 mb-4">{top3.line} ({top3.tier})</div>
+                    <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+                      <div className="text-xs text-slate-400">
+                        <span className="text-emerald-400 font-bold">{top3.wins}승</span> <span className="text-rose-400 font-bold">{top3.losses}패</span> ({top3.total}전)
+                      </div>
+                      <div className="text-2xl font-black text-amber-500">{top3.winRate}%</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
           )}
-        </section>
+
+          {/* Ranking Table */}
+          <section className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl space-y-4">
+            <div className="px-6 py-5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">📋 전체 장인 랭킹 목록 ({specialistRankings.length}명)</h3>
+              <div className="text-xs text-slate-400">
+                조건: <strong className="text-amber-400">{appliedChampFilter.champion}</strong> / 최소 <strong className="text-indigo-400">{appliedChampFilter.minGames}판</strong>
+              </div>
+            </div>
+
+            {specialistRankings.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead>
+                    <tr className="text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-950/60 border-b border-slate-800">
+                      <th className="py-3 px-6 w-20">순위</th>
+                      <th className="py-3 px-6">소환사명</th>
+                      <th className="py-3 px-6">챔피언</th>
+                      <th className="py-3 px-6">주라인/티어</th>
+                      <th className="py-3 px-6 text-center">판수</th>
+                      <th className="py-3 px-6 text-center">승/패</th>
+                      <th className="py-3 px-6 text-right">승률</th>
+                      <th className="py-3 px-6 text-center">장인 칭호</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {specialistRankings.map((item, idx) => (
+                      <tr key={`${item.playerName}_${item.champion}_${idx}`} className="hover:bg-cyan-950/20 transition">
+                        <td className="py-4 px-6 font-extrabold text-slate-300">{idx === 0 ? "🥇 1위" : idx === 1 ? "🥈 2위" : idx === 2 ? "🥉 3위" : `${idx + 1}위`}</td>
+                        <td className="py-4 px-6">
+                          <button
+                            type="button"
+                            onClick={() => onSearchPlayer(item.playerName)}
+                            className="font-bold text-slate-100 hover:text-cyan-400 hover:underline transition"
+                          >
+                            {item.playerName} ↗
+                          </button>
+                        </td>
+                        <td className="py-4 px-6"><span className="font-extrabold text-amber-400 bg-amber-950/40 border border-amber-500/20 px-2.5 py-1 rounded-lg text-xs">{item.champion}</span></td>
+                        <td className="py-4 px-6 text-xs text-slate-300">{item.line} ({item.tier})</td>
+                        <td className="py-4 px-6 text-center font-bold text-slate-300">{item.total}전</td>
+                        <td className="py-4 px-6 text-center text-xs text-slate-400"><span className="text-emerald-400 font-bold">{item.wins}승</span> / <span className="text-rose-400 font-bold">{item.losses}패</span></td>
+                        <td className="py-4 px-6 text-right font-black text-base text-cyan-400">{item.winRate}%</td>
+                        <td className="py-4 px-6 text-center"><span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">{getRankBadgeTitle(item.winRate, item.total)}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-16 text-center text-slate-500 text-sm">해당 조건에 부합하는 장인 랭커가 없습니다.</div>
+            )}
+          </section>
+
+        </div>
       )}
 
     </main>
