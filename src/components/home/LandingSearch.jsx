@@ -165,44 +165,6 @@ const LandingSearch = ({
                 </button>
               </div>
             </div>
-
-            {/* Quick Presets for Mobile */}
-            <div className="flex items-center space-x-2 pt-0.5">
-              <span className="text-[11px] text-slate-400 font-semibold">간편 설정:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  const range = window.DateUtils.getDefaultDateRange(null);
-                  setStartDate(range.startDate);
-                  setEndDate(range.endDate);
-                }}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-slate-700 transition cursor-pointer"
-              >
-                전체 기간
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const range = window.DateUtils.getDefaultDateRange(30);
-                  setStartDate(range.startDate);
-                  setEndDate(range.endDate);
-                }}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
-              >
-                최근 30일
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const range = window.DateUtils.getDefaultDateRange(7);
-                  setStartDate(range.startDate);
-                  setEndDate(range.endDate);
-                }}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
-              >
-                최근 7일
-              </button>
-            </div>
           </div>
         </form>
       </div>

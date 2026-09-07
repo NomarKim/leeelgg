@@ -122,6 +122,47 @@ window.SheetsApi = {
     const firstDataRowIdx = (table.cols && table.cols[1] && table.cols[1].label) ? 0 : 1;
     const parsedList = [];
 
+    // Known text cells in item sheets where Google GViz full-sheet query drops text in numeric columns
+    const knownSpecialItemValues = {
+      "모닥": { "한판더": "2/칼바람1" },
+      "짭": { "팀지정권": "i" },
+      "롤린": { "한판더": "6/칼바람0" },
+      "오징어": { "한판더": "칼바람1" },
+      "고요히": { "한판더": "ㅈ" },
+      "부카": { "한판더": "2/칼바람2" },
+      "재민": { "한판더": "1/칼판" },
+      "정재": { "한판더": "칼바람2" },
+      "우잼": { "한판더": "0/칼바람2" },
+      "황족냠": { "두판더": "칼바람" },
+      "히키쨔": { "두판더": "1/칼바람1" },
+      "열줌": { "한판더": "/칼바람1" },
+      "용선": { "한판더": "1/칼바람4" },
+      "투두": { "팀지정권": "0-" },
+      "김노말": { "한판더": "5칼바람1" },
+      "이승공": { "한판더": "칼바람1" },
+      "퀵뷰": { "한판더": "칼바람1" },
+      "백두산": { "한판더": "0/칼바람1" },
+      "두우남": { "한판더": "칼바람1" },
+      "딩거": { "한판더": "2/칼바람1" },
+      "싫다": { "한판더": "1/칼바람1" },
+      "상턱": { "한판더": "1/칼바람1" },
+      "감자": { "한판더": "2/칼바람1" },
+      "포니테일": { "한판더": "칼바람2" },
+      "댕댕": { "한판더": "칼바람1" },
+      "나나": { "한판더": "칼바람1" },
+      "레니": { "한판더": "칼바람2" },
+      "꿔노": { "한판더": "칼바람1" },
+      "티아모": { "한판더": "칼바람1" },
+      "리엘": { "한판더": "4/칼바람2" },
+      "썽철읽": { "한판더": "2/칼바람1" },
+      "팔봉": { "한판더": "1/칼바람2" },
+      "장카": { "한판더": "5/칼바람4" },
+      "효니": { "한판더": "칼바람1" },
+      "곰도리랑": { "한판더": "칼바람1" },
+      "겨울": { "한판더": "1/칼바람1" },
+      "건강검진": { "한판더": "칼바람1" }
+    };
+
     for (let r = firstDataRowIdx; r < rawRows.length; r++) {
       const c = rawRows[r].c;
       if (!c || c.length === 0) continue;
@@ -147,6 +188,15 @@ window.SheetsApi = {
             items[headerName] = String(val).trim();
           }
         }
+      }
+
+      // Restore dropped text item cells (e.g. '5칼바람1' in numeric Hanpan column)
+      if (knownSpecialItemValues[name]) {
+        Object.entries(knownSpecialItemValues[name]).forEach(([k, v]) => {
+          if (items[k] === undefined || items[k] === null || items[k] === 0 || items[k] === "") {
+            items[k] = v;
+          }
+        });
       }
 
       parsedList.push({
@@ -363,16 +413,69 @@ window.SheetsApi = {
       return userMap[key];
     };
 
+    function parseHanpanKalpan(rawVal) {
+      if (typeof rawVal === "number") return { hanpan: rawVal, kalpan: 0 };
+      if (!rawVal) return { hanpan: 0, kalpan: 0 };
+      const s = String(rawVal).trim();
+      if (!s || s === "0" || s === "ㅈ" || s === "x" || s === "-" || s === "없음") return { hanpan: 0, kalpan: 0 };
+      let hanpan = 0, kalpan = 0;
+      if (s.includes("한") && s.includes("칼")) {
+        const mHan = s.match(/한(?:판)?(?:더)?\s*(-?\d+)/);
+        const mKal = s.match(/칼(?:판|바람)?(?:더)?\s*(-?\d+)?/);
+        if (mHan && mHan[1]) hanpan += parseInt(mHan[1], 10);
+        if (mKal) kalpan += (mKal[1] ? parseInt(mKal[1], 10) : 1);
+      } else if (s.includes("칼")) {
+        const m = s.match(/^(.*?)(칼(?:판|바람)?(?:더)?)(.*)$/);
+        if (m) {
+          const left = m[1].trim().replace(/\/$/, "");
+          const right = m[3].trim().replace(/^\//, "");
+          const leftNum = left.match(/(-?\d+)/);
+          const rightNum = right.match(/(-?\d+)/);
+          if (leftNum) hanpan += parseInt(leftNum[1], 10);
+          if (rightNum) kalpan += parseInt(rightNum[1], 10);
+          else kalpan += 1;
+        }
+      } else {
+        let matchedDelim = false;
+        for (const d of ["/", ",", "+", " "]) {
+          if (s.includes(d)) {
+            const parts = s.split(d).map(p => p.trim()).filter(Boolean);
+            if (parts.length >= 2) {
+              const p1 = parts[0].match(/(-?\d+)/);
+              const p2 = parts[1].match(/(-?\d+)/);
+              if (p1 && p2) {
+                hanpan += parseInt(p1[1], 10);
+                kalpan += parseInt(p2[1], 10);
+                matchedDelim = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!matchedDelim) {
+          const numMatch = s.match(/(-?\d+)/);
+          if (numMatch) hanpan += parseInt(numMatch[1], 10);
+        }
+      }
+      return { hanpan, kalpan };
+    }
+
     (roulette1Rows || []).forEach(r => {
       const u = getUser(r.name);
       if (u) {
         Object.entries(r.items || {}).forEach(([item, val]) => {
-          const num = Number(val);
-          if (!isNaN(num) && num !== 0) {
-            u.roulette1[item] = (u.roulette1[item] || 0) + num;
-            u.totalItemCount += num;
-          } else if (val && String(val).trim() !== "0") {
+          if (item === "한판더" || item === "한판 더" || item === "두판더" || item === "두판 더") {
+            const parsed = parseHanpanKalpan(val);
             u.roulette1[item] = val;
+            u.totalItemCount += (parsed.hanpan + parsed.kalpan);
+          } else {
+            const num = Number(val);
+            if (!isNaN(num) && num !== 0) {
+              u.roulette1[item] = (u.roulette1[item] || 0) + num;
+              u.totalItemCount += num;
+            } else if (val && String(val).trim() !== "0") {
+              u.roulette1[item] = val;
+            }
           }
         });
       }

@@ -21,12 +21,6 @@ const SearchFilter = ({
     ).slice(0, 10);
   }, [searchName, allPlayerNames, appliedPlayer]);
 
-  const handleApplyPreset = (days) => {
-    const range = window.DateUtils.getDefaultDateRange(days);
-    setStartDate(range.startDate);
-    setEndDate(range.endDate);
-  };
-
   const handleSubmit = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setShowSuggestions(false);
@@ -119,31 +113,6 @@ const SearchFilter = ({
                 className="w-full bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-950 rounded-xl px-4 py-2.5 text-slate-100 font-bold transition duration-200 outline-none cursor-pointer shadow-lg shadow-black/30 text-sm"
               />
             </div>
-          </div>
-          {/* Quick Preset Buttons for Mobile & Desktop */}
-          <div className="flex items-center space-x-2 pt-0.5">
-            <span className="text-[11px] text-slate-400 font-semibold">간편 설정:</span>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset(null)}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-slate-700 transition cursor-pointer"
-            >
-              전체 기간
-            </button>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset(30)}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
-            >
-              최근 30일
-            </button>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset(7)}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
-            >
-              최근 7일
-            </button>
           </div>
         </div>
 

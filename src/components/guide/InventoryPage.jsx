@@ -135,11 +135,69 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
   const parsedHanpanData = useMemo(() => {
     const r1 = displayedUser?.roulette1 || {};
     let hanpan = 0;
+    let dupan = 0;
     let kalpan = 0;
 
-    // 1. roulette1 시트에 '칼판더' 또는 '칼바람' 별도 열이 있는 경우 가산
+    // Generic slot parser for numbers and complex mixed notations (e.g. "5칼바람1", "2/칼바람1", "1/칼판", "칼바람2")
+    const parseSlot = (rawVal) => {
+      let mainCount = 0;
+      let extraKalpan = 0;
+      if (rawVal === undefined || rawVal === null || rawVal === 0 || rawVal === "0") {
+        return { main: 0, kalpan: 0 };
+      }
+      if (typeof rawVal === "number") {
+        return { main: rawVal, kalpan: 0 };
+      }
+      const s = String(rawVal).trim();
+      if (!s || ["0", "0.0", "ㅈ", "x", "-", "없음", "null", "None"].includes(s)) {
+        return { main: 0, kalpan: 0 };
+      }
+
+      if (s.includes("한") && s.includes("칼")) {
+        const mHan = s.match(/한(?:판)?(?:더)?\s*(-?\d+)/);
+        const mKal = s.match(/칼(?:판|바람)?(?:더)?\s*(-?\d+)?/);
+        if (mHan && mHan[1]) mainCount += parseInt(mHan[1], 10);
+        if (mKal) extraKalpan += (mKal[1] ? parseInt(mKal[1], 10) : 1);
+        return { main: mainCount, kalpan: extraKalpan };
+      }
+
+      if (s.includes("칼")) {
+        const m = s.match(/^(.*?)(칼(?:판|바람)?(?:더)?)(.*)$/);
+        if (m) {
+          const left = m[1].trim().replace(/\/$/, "");
+          const right = m[3].trim().replace(/^\//, "");
+          const leftNum = left.match(/(-?\d+)/);
+          const rightNum = right.match(/(-?\d+)/);
+          if (leftNum) mainCount += parseInt(leftNum[1], 10);
+          if (rightNum) extraKalpan += parseInt(rightNum[1], 10);
+          else extraKalpan += 1;
+          return { main: mainCount, kalpan: extraKalpan };
+        }
+      }
+
+      for (const d of ["/", ",", "+", " "]) {
+        if (s.includes(d)) {
+          const parts = s.split(d).map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            const p1 = parts[0].match(/(-?\d+)/);
+            const p2 = parts[1].match(/(-?\d+)/);
+            if (p1 && p2) {
+              return { main: parseInt(p1[1], 10), kalpan: parseInt(p2[1], 10) };
+            }
+          }
+        }
+      }
+
+      const numMatch = s.match(/(-?\d+)/);
+      if (numMatch) {
+        mainCount += parseInt(numMatch[1], 10);
+      }
+      return { main: mainCount, kalpan: extraKalpan };
+    };
+
+    // 1. Separate '칼판더' / '칼바람' columns if any
     Object.keys(r1).forEach(k => {
-      if (k.includes("칼판") || k.includes("칼바람")) {
+      if (k !== "한판더" && k !== "두판더" && (k.includes("칼판") || k.includes("칼바람"))) {
         const val = r1[k];
         if (typeof val === "number") kalpan += val;
         else if (typeof val === "string") {
@@ -149,70 +207,19 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       }
     });
 
-    // 2. '한판더' 열의 복합 텍스트/숫자 파싱
-    const hanpanRaw = r1["한판더"] !== undefined ? r1["한판더"] : r1["한판 더"];
-    if (hanpanRaw !== undefined && hanpanRaw !== null) {
-      if (typeof hanpanRaw === "number") {
-        hanpan += hanpanRaw;
-      } else if (typeof hanpanRaw === "string") {
-        const s = hanpanRaw.trim();
-        if (s && s !== "0" && s !== "ㅈ" && s !== "x" && s !== "-" && s !== "없음" && s !== "null" && s !== "None") {
-          
-          // Case A: "한판1 칼판2", "한1칼2", "한판 1 / 칼판 2" 등 '한'과 '칼'이 모두 명시된 경우
-          if (s.includes("한") && s.includes("칼")) {
-            const mHan = s.match(/한(?:판)?(?:더)?\s*(-?\d+)/);
-            const mKal = s.match(/칼(?:판|바람)?(?:더)?\s*(-?\d+)?/);
-            if (mHan && mHan[1]) hanpan += parseInt(mHan[1], 10);
-            if (mKal) kalpan += (mKal[1] ? parseInt(mKal[1], 10) : 1);
-          }
-          // Case B: "칼" 키워드가 포함된 경우 (예: "1 칼1", "1 칼판2", "1칼", "1(칼판1)", "1+칼판2", "1 / 칼1", "칼2")
-          else if (s.includes("칼")) {
-            const m = s.match(/^(.*?)(칼(?:판|바람)?(?:더)?)(.*)$/);
-            if (m) {
-              const left = m[1].trim();
-              const right = m[3].trim();
+    // 2. '한판더' column parsing
+    const hanpanRaw = getItemCount(r1, ["한판더", "한판 더", "한판"]);
+    const parsedH = parseSlot(hanpanRaw);
+    hanpan += parsedH.main;
+    kalpan += parsedH.kalpan;
 
-              const leftNumMatch = left.match(/(-?\d+)/);
-              const rightNumMatch = right.match(/(-?\d+)/);
+    // 3. '두판더' column parsing (supports mixed '1/칼바람1', '칼바람')
+    const dupanRaw = getItemCount(r1, ["두판더", "두판 더", "두판"]);
+    const parsedD = parseSlot(dupanRaw);
+    dupan += parsedD.main;
+    kalpan += parsedD.kalpan;
 
-              if (leftNumMatch) hanpan += parseInt(leftNumMatch[1], 10);
-              if (rightNumMatch) kalpan += parseInt(rightNumMatch[1], 10);
-              else kalpan += 1;
-            }
-          }
-          // Case C: 구분자(/, 콤마, +, 공백)로 2개 이상의 숫자가 분리된 경우 (예: "1/1", "1 1", "1+1", "1, 1")
-          else {
-            let matchedDelim = false;
-            const delims = ["/", ",", "+", " "];
-            for (const d of delims) {
-              if (s.includes(d)) {
-                const parts = s.split(d).map(p => p.trim()).filter(Boolean);
-                if (parts.length >= 2) {
-                  const p1 = parts[0].match(/(-?\d+)/);
-                  const p2 = parts[1].match(/(-?\d+)/);
-                  if (p1 && p2) {
-                    hanpan += parseInt(p1[1], 10);
-                    kalpan += parseInt(p2[1], 10);
-                    matchedDelim = true;
-                    break;
-                  }
-                }
-              }
-            }
-
-            // Case D: 순수 단일 숫자
-            if (!matchedDelim) {
-              const numMatch = s.match(/(-?\d+)/);
-              if (numMatch) {
-                hanpan += parseInt(numMatch[1], 10);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return { hanpan, kalpan };
+    return { hanpan, dupan, kalpan };
   }, [displayedUser]);
 
   const r1Obj = displayedUser?.roulette1 || {};
@@ -231,7 +238,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
           { name: "종일연참권", count: getItemCount(r1Obj, ["종일연참권", "종일 연참권"]) },
           { name: "암표", count: getItemCount(r1Obj, ["암표"]) },
           { name: "한판더", count: parsedHanpanData.hanpan },
-          { name: "두판더", count: getItemCount(r1Obj, ["두판더", "두판 더"]) },
+          { name: "두판더", count: parsedHanpanData.dupan },
           { name: "칼판더", count: parsedHanpanData.kalpan }
         ]
       },
@@ -283,11 +290,22 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
         items: [
           { name: "리롤권", count: getItemCount(r1Obj, ["리롤권", "리롤"]) },
           { name: "전챗허용권", count: getItemCount(r1Obj, ["전챗허용권", "전챗", "전챗 허용권"]) },
-          { name: "감표권", count: getItemCount(r1Obj, ["감표권", "감표"]) }
+          { name: "감표권", count: getItemCount(r1Obj, ["감표권", "감표"]) },
+          { name: "방송1시간", count: getItemCount(r1Obj, ["방송1시간", "방송 1시간", "방송1시간권"]) }
         ]
       }
     ];
   }, [r1Obj, r44Obj, parsedHanpanData]);
+
+  // Total in-game items count from parsed cards
+  const totalIngameItemCount = useMemo(() => {
+    return ingameGroups.reduce((acc, group) => {
+      return acc + group.items.reduce((gAcc, item) => {
+        const num = Number(item.count);
+        return !isNaN(num) ? gAcc + num : gAcc;
+      }, 0);
+    }, 0);
+  }, [ingameGroups]);
 
   // 2. 방송 & 리액션 아이템 그룹 (2번)
   const broadcastGroups = useMemo(() => {
@@ -834,7 +852,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                 </div>
               </div>
               <span className="text-xs font-bold text-cyan-400 bg-cyan-950 px-3 py-1 rounded-full border border-cyan-500/30">
-                총 {Object.values(r1Obj).reduce((a, b) => a + (Number(b) || 0), 0)}개 보유
+                총 {totalIngameItemCount}개 보유
               </span>
             </div>
 
@@ -1145,7 +1163,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                     <th className="py-3 px-4 w-14">순번</th>
                     <th className="py-3 px-4">닉네임</th>
                     <th className="py-3 px-4 text-center">총 보유량</th>
-                    {(roulette1.headers || []).slice(0, 10).map(h => (
+                    {(roulette1.headers || []).map(h => (
                       <th key={h} className="py-3 px-2 text-center whitespace-nowrap">{h}</th>
                     ))}
                     <th className="py-3 px-4 text-center">조회</th>
@@ -1163,7 +1181,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                           </button>
                         </td>
                         <td className={`py-3 px-4 text-center font-black ${r.totalCount < 0 ? "text-rose-400" : "text-amber-400"}`}>{r.totalCount}개</td>
-                        {(roulette1.headers || []).slice(0, 10).map(h => {
+                        {(roulette1.headers || []).map(h => {
                           const val = r.items[h];
                           const isNeg = typeof val === 'number' && val < 0;
                           return (
@@ -1196,7 +1214,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                     <th className="py-3 px-4 w-14">순번</th>
                     <th className="py-3 px-4">닉네임</th>
                     <th className="py-3 px-4 text-center">총 보유량</th>
-                    {(roulette2.headers || []).slice(0, 10).map(h => (
+                    {(roulette2.headers || []).map(h => (
                       <th key={h} className="py-3 px-2 text-center whitespace-nowrap">{h}</th>
                     ))}
                     <th className="py-3 px-4 text-center">조회</th>
@@ -1214,7 +1232,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                           </button>
                         </td>
                         <td className={`py-3 px-4 text-center font-black ${r.totalCount < 0 ? "text-rose-400" : "text-pink-400"}`}>{r.totalCount}개</td>
-                        {(roulette2.headers || []).slice(0, 10).map(h => (
+                        {(roulette2.headers || []).map(h => (
                           <td key={h} className="py-3 px-2 text-center font-bold text-slate-300">
                             {r.items[h] ? <span className="text-pink-300 font-black">{r.items[h]}</span> : <span className="text-slate-600">0</span>}
                           </td>

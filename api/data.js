@@ -34,205 +34,6 @@ const INV_GIDS = {
   DEATHNOTE: "670864805"
 };
 
-async function fetchGviz(ssId, gid) {
-  const url = `https://docs.google.com/spreadsheets/d/${ssId}/gviz/tq?tqx=out:json&gid=${gid}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-  const text = await res.text();
-  const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
-  if (!match || !match[1]) throw new Error("Invalid GViz format");
-  return JSON.parse(match[1]);
-}
-
-function parseUsers(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
-  const rows = gvizData.table.rows;
-  const players = [];
-  rows.forEach(row => {
-    const c = row.c;
-    if (!c || c.length < 2) return;
-    const gameId = c[1] ? String(c[1].v || "").trim() : "";
-    if (!gameId) return;
-    const afreecaId = c[0] ? String(c[0].v || "").trim() : "";
-    const notes = c[12] ? String(c[12].v || "").trim() : "";
-    const positions = [];
-    for (let p = 0; p < 5; p++) {
-      const lineIdx = 2 + (p * 2);
-      const tierIdx = 3 + (p * 2);
-      const lineVal = c[lineIdx] ? String(c[lineIdx].v || "").trim() : "";
-      const tierVal = c[tierIdx] ? String(c[tierIdx].v || "").trim() : "";
-      if (lineVal && tierVal) {
-        positions.push({ line: lineVal, tier: tierVal });
-      }
-    }
-    players.push({ afreecaId, gameId, positions, notes });
-  });
-  return players;
-}
-
-function parseTp(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return {};
-  const rows = gvizData.table.rows;
-  const tpRules = {};
-  rows.forEach(row => {
-    const c = row.c;
-    if (!c || c.length < 6) return;
-    const tierKey = c[0] ? String(c[0].v || "").trim() : "";
-    if (!tierKey) return;
-    tpRules[tierKey] = {
-      "탑": c[1] ? Number(c[1].v || 0) : 0,
-      "정글": c[2] ? Number(c[2].v || 0) : 0,
-      "미드": c[3] ? Number(c[3].v || 0) : 0,
-      "원딜": c[4] ? Number(c[4].v || 0) : 0,
-      "서폿": c[5] ? Number(c[5].v || 0) : 0
-    };
-  });
-  return tpRules;
-}
-
-function parseGames(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
-  const rows = gvizData.table.rows;
-  const matches = [];
-  for (let i = 2; i < rows.length; i++) {
-    const c = rows[i].c;
-    if (!c) continue;
-    const winner = c[0] ? String(c[0].v || "").trim() : "";
-    if (!winner) continue;
-    const matchRow = [];
-    for (let col = 0; col < 22; col++) {
-      const val = (c[col] && c[col].v !== null) ? String(c[col].v).trim() : "";
-      matchRow.push(val);
-    }
-    matches.push(matchRow);
-  }
-  return matches;
-}
-
-function parseGenericItemSheet(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return { headers: [], rows: [] };
-  const table = gvizData.table;
-  const rawRows = table.rows;
-  if (rawRows.length === 0) return { headers: [], rows: [] };
-
-  let headers = [];
-  if (table.cols && table.cols.length > 1 && table.cols[1].label) {
-    headers = table.cols.map(c => (c && c.label) ? String(c.label).trim() : "");
-  } else if (rawRows[0] && rawRows[0].c) {
-    headers = rawRows[0].c.map(c => (c && c.v !== null) ? String(c.v).trim() : "");
-  }
-
-  const firstDataRowIdx = (table.cols && table.cols[1] && table.cols[1].label) ? 0 : 1;
-  const parsedList = [];
-
-  for (let r = firstDataRowIdx; r < rawRows.length; r++) {
-    const c = rawRows[r].c;
-    if (!c || c.length === 0) continue;
-    const name = c[0] && c[0].v !== null ? String(c[0].v).trim() : "";
-    if (!name || name === "시청자 아이디" || name === "닉네임") continue;
-
-    const items = {};
-    let totalCount = 0;
-
-    for (let col = 1; col < c.length; col++) {
-      const headerName = headers[col] || `아이템_${col}`;
-      if (!headerName) continue;
-      const cell = c[col];
-      if (cell && (cell.v !== null || cell.f !== null)) {
-        const val = (cell.f !== undefined && cell.f !== null && String(cell.f).trim() !== "") ? cell.f : cell.v;
-        const num = Number(val);
-        if (!isNaN(num)) {
-          if (num !== 0) {
-            items[headerName] = num;
-            totalCount += num;
-          }
-        } else if (String(val).trim() && String(val).trim() !== "0") {
-          items[headerName] = String(val).trim();
-        }
-      }
-    }
-
-    parsedList.push({ name, items, totalCount });
-  }
-
-  return { headers: headers.slice(1).filter(Boolean), rows: parsedList };
-}
-
-function parsePoints(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
-  const rows = gvizData.table.rows;
-  const pointsList = [];
-
-  for (let i = 0; i < rows.length; i++) {
-    const c = rows[i].c;
-    if (!c || c.length === 0) continue;
-    const name = c[0] && c[0].v !== null ? String(c[0].v).trim() : "";
-    if (!name || name === "닉네임" || name === "시청자 아이디") continue;
-
-    const wins = c[1] && c[1].v !== null ? Number(c[1].v) || 0 : 0;
-    const losses = c[2] && c[2].v !== null ? Number(c[2].v) || 0 : 0;
-    const roulette = c[3] && c[3].v !== null ? Number(c[3].v) || 0 : 0;
-    const mannerPenalty = c[4] && c[4].v !== null ? Number(c[4].v) || 0 : 0;
-    const leaverPenalty = c[5] && c[5].v !== null ? Number(c[5].v) || 0 : 0;
-    const leaverVictim = c[6] && c[6].v !== null ? Number(c[6].v) || 0 : 0;
-    const chicken = c[7] && c[7].v !== null ? (Number(c[7].v) || String(c[7].v).trim()) : 0;
-
-    let totalPoints = (c[8] && c[8].v !== null && c[8].v !== undefined && c[8].v !== "") ? Number(c[8].v) : (wins * 10 - losses * 10 + roulette * 10 - mannerPenalty * 10 - leaverPenalty * 10);
-    if (isNaN(totalPoints)) totalPoints = 0;
-
-    const notesArr = [];
-    for (let col = 9; col < c.length; col++) {
-      if (c[col] && c[col].v !== null && String(c[col].v).trim()) {
-        notesArr.push(String(c[col].v).trim());
-      }
-    }
-
-    pointsList.push({
-      name,
-      wins,
-      losses,
-      roulette,
-      mannerPenalty,
-      leaverPenalty,
-      leaverVictim,
-      chicken,
-      totalPoints,
-      notes: notesArr.join(", ")
-    });
-  }
-
-  return pointsList;
-}
-
-function parseTextList(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
-  const rows = gvizData.table.rows;
-  const list = [];
-
-  for (let i = 0; i < rows.length; i++) {
-    const c = rows[i].c;
-    if (!c || c.length === 0) continue;
-    const name = c[0] && c[0].v !== null ? String(c[0].v).trim() : "";
-    if (!name || name === "닉네임" || name === "시청자 아이디") continue;
-
-    const entries = [];
-    for (let col = 1; col < c.length; col++) {
-      if (c[col] && (c[col].v !== null || c[col].f !== null)) {
-        const val = (c[col].f !== undefined && c[col].f !== null && String(c[col].f).trim() !== "") ? String(c[col].f).trim() : String(c[col].v).trim();
-        if (val) {
-          entries.push(val);
-        }
-      }
-    }
-
-    if (entries.length > 0) {
-      list.push({ name, entries });
-    }
-  }
-
-  return list;
-}
-
 function parseCSV(text) {
   const rows = [];
   let row = [];
@@ -272,51 +73,184 @@ function parseCSV(text) {
   return rows;
 }
 
-async function fetchCsv(ssId, gid) {
-  const url = `https://docs.google.com/spreadsheets/d/${ssId}/gviz/tq?tqx=out:csv&gid=${gid}`;
-  const res = await fetch(url);
+// Fetch raw spreadsheet CSV without GViz typecasting drops
+async function fetchExportCsv(ssId, gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${ssId}/export?format=csv&gid=${gid}`;
+  const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
   if (!res.ok) throw new Error(`HTTP error ${res.status}`);
   const text = await res.text();
   return parseCSV(text);
 }
 
-function parseDeathnoteTable(gvizData) {
-  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
-  const rows = gvizData.table.rows;
-  const list = [];
-  const knownTextTeamBans = {
-    "정재": "7.26 다섯달",
-    "이간탱": "20인팀뽑(5.26)",
-    "냠냠": "8.5 세달정지 + 2달",
-    "추암": "8.21+8.30 두달"
-  };
-
-  for (let i = 0; i < rows.length; i++) {
-    const c = rows[i].c;
-    if (!c || c.length === 0) continue;
-    const name = c[0] && c[0].v !== null ? String(c[0].v).trim() : "";
-    if (!name || name === "닉네임" || name === "시청자 아이디") continue;
-
-    const deathnotes = [];
-    for (let col = 1; col <= 4; col++) {
-      if (col < c.length && c[col] && (c[col].v !== null || c[col].f !== null)) {
-        const val = String(c[col].f || c[col].v || "").trim();
-        if (val && val !== "null" && val !== "None") {
-          deathnotes.push({ round: col, reason: val });
+function parseUsers(csvRows) {
+  if (!csvRows || csvRows.length < 2) return [];
+  const players = [];
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || r.length < 2 || !r[1].trim()) continue;
+    const afreecaId = r[0].trim();
+    const gameId = r[1].trim();
+    const notes = r[12] ? r[12].trim() : "";
+    const positions = [];
+    for (let p = 0; p < 5; p++) {
+      const lineIdx = 2 + (p * 2);
+      const tierIdx = 3 + (p * 2);
+      if (lineIdx < r.length && tierIdx < r.length) {
+        const l = r[lineIdx].trim();
+        const t = r[tierIdx].trim();
+        if (l && t) {
+          positions.push({ line: l, tier: t });
         }
       }
     }
+    players.push({ afreecaId, gameId, positions, notes });
+  }
+  return players;
+}
 
-    let teamBan = null;
-    if (c.length > 7 && c[7] && (c[7].v !== null || c[7].f !== null)) {
-      const val = String(c[7].f || c[7].v || "").trim();
-      if (val && val !== "팀금" && val !== "null" && val !== "None") {
-        teamBan = val;
+function parseTp(csvRows) {
+  if (!csvRows || csvRows.length < 2) return {};
+  const tpRules = {};
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || r.length < 6 || !r[0].trim()) continue;
+    const tierKey = r[0].trim();
+    const toNum = (val) => {
+      const n = Number(val);
+      return isNaN(n) ? 0 : n;
+    };
+    tpRules[tierKey] = {
+      "탑": toNum(r[1]),
+      "정글": toNum(r[2]),
+      "미드": toNum(r[3]),
+      "원딜": toNum(r[4]),
+      "서폿": toNum(r[5])
+    };
+  }
+  return tpRules;
+}
+
+function parseGames(csvRows) {
+  if (!csvRows || csvRows.length < 3) return [];
+  const matches = [];
+  for (let i = 2; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || r.length < 22 || !r[0].trim()) continue;
+    matches.push(r.slice(0, 22).map(c => c.trim()));
+  }
+  return matches;
+}
+
+function parseGenericItemSheet(csvRows) {
+  if (!csvRows || csvRows.length < 2) return { headers: [], rows: [] };
+  const headers = csvRows[0].map(h => h.trim());
+  const parsedList = [];
+
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || !r[0].trim() || r[0].trim() === "시청자 아이디" || r[0].trim() === "닉네임") continue;
+    const name = r[0].trim();
+    const items = {};
+    let totalCount = 0;
+
+    for (let col = 1; col < r.length; col++) {
+      if (col < headers.length) {
+        const h = headers[col];
+        const val = r[col].trim();
+        if (val) {
+          const num = Number(val);
+          if (!isNaN(num)) {
+            if (num !== 0) {
+              items[h] = num;
+              totalCount += num;
+            }
+          } else {
+            items[h] = val;
+          }
+        }
       }
     }
-    if (!teamBan && knownTextTeamBans[name]) {
-      teamBan = knownTextTeamBans[name];
+    parsedList.push({ name, items, totalCount });
+  }
+
+  return { headers: headers.slice(1).filter(Boolean), rows: parsedList };
+}
+
+function parsePoints(csvRows) {
+  if (!csvRows || csvRows.length < 2) return [];
+  const pointsList = [];
+
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || !r[0].trim() || r[0].trim() === "닉네임" || r[0].trim() === "시청자 아이디") continue;
+    const name = r[0].trim();
+    const getNum = (idx) => {
+      if (idx < r.length && r[idx].trim()) {
+        const n = Number(r[idx].trim());
+        return isNaN(n) ? 0 : n;
+      }
+      return 0;
+    };
+
+    const wins = getNum(1);
+    const losses = getNum(2);
+    const roulette = getNum(3);
+    const mannerPenalty = getNum(4);
+    const leaverPenalty = getNum(5);
+    const leaverVictim = getNum(6);
+    const chicken = r[7] ? r[7].trim() : "0";
+    const totalPoints = (r.length > 8 && r[8].trim()) ? getNum(8) : (wins * 10 - losses * 10 + roulette * 10 - mannerPenalty * 10 - leaverPenalty * 10);
+    const notes = r.slice(9).map(s => s.trim()).filter(Boolean).join(", ");
+
+    pointsList.push({
+      name,
+      wins,
+      losses,
+      roulette,
+      mannerPenalty,
+      leaverPenalty,
+      leaverVictim,
+      chicken,
+      totalPoints,
+      notes
+    });
+  }
+
+  return pointsList;
+}
+
+function parseTextList(csvRows) {
+  if (!csvRows || csvRows.length < 2) return [];
+  const list = [];
+
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || !r[0].trim() || r[0].trim() === "닉네임" || r[0].trim() === "시청자 아이디") continue;
+    const name = r[0].trim();
+    const entries = r.slice(1).map(s => s.trim()).filter(Boolean);
+    if (entries.length > 0) {
+      list.push({ name, entries });
     }
+  }
+
+  return list;
+}
+
+function parseDeathnoteTable(csvRows) {
+  if (!csvRows || csvRows.length < 2) return [];
+  const list = [];
+
+  for (let i = 1; i < csvRows.length; i++) {
+    const r = csvRows[i];
+    if (!r || !r[0].trim() || r[0].trim() === "닉네임" || r[0].trim() === "시청자 아이디") continue;
+    const name = r[0].trim();
+    const deathnotes = [];
+    for (let col = 1; col <= 4; col++) {
+      if (col < r.length && r[col].trim()) {
+        deathnotes.push({ round: col, reason: r[col].trim() });
+      }
+    }
+    let teamBan = (r.length > 7 && r[7].trim() && r[7].trim() !== "팀금") ? r[7].trim() : null;
 
     if (deathnotes.length > 0 || teamBan) {
       list.push({
@@ -327,7 +261,172 @@ function parseDeathnoteTable(gvizData) {
       });
     }
   }
+
   return list;
+}
+
+// Build aggregated user map (Strict 1:1 matching without alias linkage)
+function buildInventoryUserMap(roulette1Rows, roulette2Rows, pointsRows, roulette44Rows, tftRows, praiseRows, deathnoteRows) {
+  const userMap = {};
+
+  const getUser = (rawName) => {
+    if (!rawName) return null;
+    const trimmed = String(rawName).trim();
+    const key = trimmed.toLowerCase();
+    if (!userMap[key]) {
+      userMap[key] = {
+        name: trimmed,
+        roulette1: {},
+        roulette2: {},
+        points: null,
+        roulette44: {},
+        tft: {},
+        praises: [],
+        deathnote: [],
+        teamBan: null,
+        totalItemCount: 0
+      };
+    }
+    return userMap[key];
+  };
+
+  function parseHanpanKalpan(rawVal) {
+    if (typeof rawVal === "number") return { hanpan: rawVal, kalpan: 0 };
+    if (!rawVal) return { hanpan: 0, kalpan: 0 };
+    const s = String(rawVal).trim();
+    if (!s || s === "0" || s === "ㅈ" || s === "x" || s === "-" || s === "없음") return { hanpan: 0, kalpan: 0 };
+    let hanpan = 0, kalpan = 0;
+    if (s.includes("한") && s.includes("칼")) {
+      const mHan = s.match(/한(?:판)?(?:더)?\s*(-?\d+)/);
+      const mKal = s.match(/칼(?:판|바람)?(?:더)?\s*(-?\d+)?/);
+      if (mHan && mHan[1]) hanpan += parseInt(mHan[1], 10);
+      if (mKal) kalpan += (mKal[1] ? parseInt(mKal[1], 10) : 1);
+    } else if (s.includes("칼")) {
+        const m = s.match(/^(.*?)(칼(?:판|바람)?(?:더)?)(.*)$/);
+        if (m) {
+          const left = m[1].trim().replace(/\/$/, "");
+          const right = m[3].trim().replace(/^\//, "");
+          const leftNum = left.match(/(-?\d+)/);
+          const rightNum = right.match(/(-?\d+)/);
+          if (leftNum) hanpan += parseInt(leftNum[1], 10);
+          if (rightNum) kalpan += parseInt(rightNum[1], 10);
+          else kalpan += 1;
+        }
+      } else {
+        let matchedDelim = false;
+        for (const d of ["/", ",", "+", " "]) {
+          if (s.includes(d)) {
+            const parts = s.split(d).map(p => p.trim()).filter(Boolean);
+            if (parts.length >= 2) {
+              const p1 = parts[0].match(/(-?\d+)/);
+              const p2 = parts[1].match(/(-?\d+)/);
+              if (p1 && p2) {
+                hanpan += parseInt(p1[1], 10);
+                kalpan += parseInt(p2[1], 10);
+                matchedDelim = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!matchedDelim) {
+          const numMatch = s.match(/(-?\d+)/);
+          if (numMatch) hanpan += parseInt(numMatch[1], 10);
+        }
+      }
+    }
+    return { hanpan, kalpan };
+  }
+
+  (roulette1Rows || []).forEach(r => {
+    const u = getUser(r.name);
+    if (u) {
+      Object.entries(r.items || {}).forEach(([item, val]) => {
+        if (item === "한판더" || item === "한판 더" || item === "두판더" || item === "두판 더") {
+          const parsed = parseHanpanKalpan(val);
+          u.roulette1[item] = val;
+          u.totalItemCount += (parsed.hanpan + parsed.kalpan);
+        } else {
+          const num = Number(val);
+          if (!isNaN(num) && num !== 0) {
+            u.roulette1[item] = (u.roulette1[item] || 0) + num;
+            u.totalItemCount += num;
+          } else if (val && String(val).trim() !== "0") {
+            u.roulette1[item] = val;
+          }
+        }
+      });
+    }
+  });
+
+  (roulette2Rows || []).forEach(r => {
+    const u = getUser(r.name);
+    if (u) {
+      Object.entries(r.items || {}).forEach(([item, val]) => {
+        const num = Number(val);
+        if (!isNaN(num) && num !== 0) {
+          u.roulette2[item] = (u.roulette2[item] || 0) + num;
+          u.totalItemCount += num;
+        } else if (val && String(val).trim() !== "0") {
+          u.roulette2[item] = val;
+        }
+      });
+    }
+  });
+
+  (pointsRows || []).forEach(p => {
+    const u = getUser(p.name);
+    if (u) {
+      u.points = p;
+    }
+  });
+
+  (roulette44Rows || []).forEach(r => {
+    const u = getUser(r.name);
+    if (u) {
+      Object.entries(r.items || {}).forEach(([item, val]) => {
+        const num = Number(val);
+        if (!isNaN(num) && num !== 0) {
+          u.roulette44[item] = (u.roulette44[item] || 0) + num;
+          u.totalItemCount += num;
+        } else if (val && String(val).trim() !== "0") {
+          u.roulette44[item] = val;
+        }
+      });
+    }
+  });
+
+  (tftRows || []).forEach(r => {
+    const u = getUser(r.name);
+    if (u) {
+      Object.entries(r.items || {}).forEach(([item, val]) => {
+        const num = Number(val);
+        if (!isNaN(num) && num !== 0) {
+          u.tft[item] = (u.tft[item] || 0) + num;
+          u.totalItemCount += num;
+        } else if (val && String(val).trim() !== "0") {
+          u.tft[item] = val;
+        }
+      });
+    }
+  });
+
+  (praiseRows || []).forEach(p => {
+    const u = getUser(p.name);
+    if (u && p.entries) {
+      u.praises = p.entries || [];
+    }
+  });
+
+  (deathnoteRows || []).forEach(d => {
+    const u = getUser(d.name);
+    if (u) {
+      u.deathnote = d.deathnotes || [];
+      u.teamBan = d.teamBan || null;
+    }
+  });
+
+  return userMap;
 }
 
 module.exports = async (req, res) => {
@@ -342,16 +441,16 @@ module.exports = async (req, res) => {
       userData, tpData, gameData,
       r1Data, r2Data, pointsData, r44Data, tftData, praiseData, dnData
     ] = await Promise.all([
-      fetchGviz(SS_ID, GIDS.USER),
-      fetchGviz(SS_ID, GIDS.TP),
-      fetchGviz(SS_ID, GIDS.GAME),
-      fetchGviz(INV_SS_ID, INV_GIDS.ROULETTE1).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.ROULETTE2).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.POINTS).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.ROULETTE44).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.TFT).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.PRAISE).catch(() => null),
-      fetchGviz(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => null)
+      fetchExportCsv(SS_ID, GIDS.USER),
+      fetchExportCsv(SS_ID, GIDS.TP),
+      fetchExportCsv(SS_ID, GIDS.GAME),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE1).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE2).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.POINTS).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE44).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.TFT).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.PRAISE).catch(() => null),
+      fetchExportCsv(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => null)
     ]);
 
     const players = parseUsers(userData);
@@ -395,4 +494,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch spreadsheet data", details: err.message });
   }
 };
-
