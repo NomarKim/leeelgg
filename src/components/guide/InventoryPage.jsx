@@ -125,10 +125,11 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
   };
 
   // ───────────────────────────────────────────────────────────
-  // Special Parser: 한판더 & 칼판더 parsing
-  // 1) ㅈ 처럼 문자만 있는건 0으로 처리
-  // 2) 숫자/칼판(또는 칼판더, 칼바람)숫자 형태: 앞 = 한판더, 뒤 = 칼판더 (뒤 숫자 없으면 1)
-  // 3) 숫자 없이 칼판/칼판더/칼바람숫자 붙은 경우: 한판더 = 0, 칼판더 = 해당 숫자 (없으면 1)
+  // Special Parser: 한판더 & 칼판더 parsing (슬래시 / 유무 무관 완벽 분리)
+  // 1) ㅈ, x, 없음, - 처럼 무의미한 문자는 0으로 처리
+  // 2) 슬래시(/), 공백(스페이스), 콤마(,), 덧셈(+), 괄호() 유무와 관계없이 한판더/칼판더 분리
+  //    예: "1/1", "1 1", "1 칼1", "1칼1", "1 칼판2", "1칼", "1(칼판1)", "1 + 칼1", "한1칼2"
+  // 3) 칼/칼판/칼판더/칼바람만 단독으로 있는 경우: 한판더 = 0, 칼판더 = 해당 숫자 (없으면 1)
   // 4) 순수 숫자만 있는 경우: 한판더 = 숫자, 칼판더 = 0
   // ───────────────────────────────────────────────────────────
   const parsedHanpanData = useMemo(() => {
@@ -136,7 +137,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
     let hanpan = 0;
     let kalpan = 0;
 
-    // Check direct 칼판더 keys in roulette1
+    // 1. roulette1 시트에 '칼판더' 또는 '칼바람' 별도 열이 있는 경우 가산
     Object.keys(r1).forEach(k => {
       if (k.includes("칼판") || k.includes("칼바람")) {
         const val = r1[k];
@@ -148,46 +149,62 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       }
     });
 
-    // Parse column '한판더'
+    // 2. '한판더' 열의 복합 텍스트/숫자 파싱
     const hanpanRaw = r1["한판더"] !== undefined ? r1["한판더"] : r1["한판 더"];
     if (hanpanRaw !== undefined && hanpanRaw !== null) {
       if (typeof hanpanRaw === "number") {
         hanpan += hanpanRaw;
       } else if (typeof hanpanRaw === "string") {
-        const str = hanpanRaw.trim();
-        if (str && str !== "0") {
-          // 1. Slash format
-          if (str.includes("/")) {
-            const parts = str.split("/", 2);
-            const left = parts[0].trim();
-            const right = parts[1] ? parts[1].trim() : "";
+        const s = hanpanRaw.trim();
+        if (s && s !== "0" && s !== "ㅈ" && s !== "x" && s !== "-" && s !== "없음" && s !== "null" && s !== "None") {
+          
+          // Case A: "한판1 칼판2", "한1칼2", "한판 1 / 칼판 2" 등 '한'과 '칼'이 모두 명시된 경우
+          if (s.includes("한") && s.includes("칼")) {
+            const mHan = s.match(/한(?:판)?(?:더)?\s*(-?\d+)/);
+            const mKal = s.match(/칼(?:판|바람)?(?:더)?\s*(-?\d+)?/);
+            if (mHan && mHan[1]) hanpan += parseInt(mHan[1], 10);
+            if (mKal) kalpan += (mKal[1] ? parseInt(mKal[1], 10) : 1);
+          }
+          // Case B: "칼" 키워드가 포함된 경우 (예: "1 칼1", "1 칼판2", "1칼", "1(칼판1)", "1+칼판2", "1 / 칼1", "칼2")
+          else if (s.includes("칼")) {
+            const m = s.match(/^(.*?)(칼(?:판|바람)?(?:더)?)(.*)$/);
+            if (m) {
+              const left = m[1].trim();
+              const right = m[3].trim();
 
-            // Left side -> 한판더
-            if (left.includes("칼판") || left.includes("칼바람") || left.includes("칼")) {
-              const mLeft = left.match(/-?\d+/);
-              kalpan += mLeft ? parseInt(mLeft[0], 10) : 1;
-            } else {
-              const mLeft = left.match(/-?\d+/);
-              if (mLeft) hanpan += parseInt(mLeft[0], 10);
+              const leftNumMatch = left.match(/(-?\d+)/);
+              const rightNumMatch = right.match(/(-?\d+)/);
+
+              if (leftNumMatch) hanpan += parseInt(leftNumMatch[1], 10);
+              if (rightNumMatch) kalpan += parseInt(rightNumMatch[1], 10);
+              else kalpan += 1;
+            }
+          }
+          // Case C: 구분자(/, 콤마, +, 공백)로 2개 이상의 숫자가 분리된 경우 (예: "1/1", "1 1", "1+1", "1, 1")
+          else {
+            let matchedDelim = false;
+            const delims = ["/", ",", "+", " "];
+            for (const d of delims) {
+              if (s.includes(d)) {
+                const parts = s.split(d).map(p => p.trim()).filter(Boolean);
+                if (parts.length >= 2) {
+                  const p1 = parts[0].match(/(-?\d+)/);
+                  const p2 = parts[1].match(/(-?\d+)/);
+                  if (p1 && p2) {
+                    hanpan += parseInt(p1[1], 10);
+                    kalpan += parseInt(p2[1], 10);
+                    matchedDelim = true;
+                    break;
+                  }
+                }
+              }
             }
 
-            // Right side -> 칼판더
-            if (right.includes("칼판") || right.includes("칼바람") || right.includes("칼")) {
-              const mRight = right.match(/-?\d+/);
-              kalpan += mRight ? parseInt(mRight[0], 10) : 1; // if no number -> 1
-            } else {
-              const mRight = right.match(/-?\d+/);
-              if (mRight) hanpan += parseInt(mRight[0], 10);
-            }
-          } else {
-            // 2. No slash
-            if (str.includes("칼판") || str.includes("칼바람") || str.includes("칼")) {
-              const m = str.match(/-?\d+/);
-              kalpan += m ? parseInt(m[0], 10) : 1;
-            } else {
-              const m = str.match(/-?\d+/);
-              if (m) {
-                hanpan += parseInt(m[0], 10);
+            // Case D: 순수 단일 숫자
+            if (!matchedDelim) {
+              const numMatch = s.match(/(-?\d+)/);
+              if (numMatch) {
+                hanpan += parseInt(numMatch[1], 10);
               }
             }
           }
