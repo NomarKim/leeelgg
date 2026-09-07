@@ -1,5 +1,5 @@
 // LeeeL's Guide Page Component (공식 내전 기본 룰 + 세부 룰 + 당부 말씀 5줄 원문)
-const GuidePage = ({ onGoHome, onNavigateToRecord, onNavigateToInventory }) => {
+const GuidePage = ({ onGoHome, onNavigateToRecord, onNavigateToInventory, onNavigateToRouletteOdds }) => {
   const { BookOpenIcon, SparklesIcon, ArrowLeftIcon, ArrowRightIcon, ShieldIcon, CheckIcon, InfoIcon, GiftIcon } = window.Icons;
 
   return (
@@ -24,10 +24,19 @@ const GuidePage = ({ onGoHome, onNavigateToRecord, onNavigateToInventory }) => {
           {onNavigateToInventory && (
             <button
               onClick={onNavigateToInventory}
-              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-400 transition"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-400 transition cursor-pointer"
             >
               <GiftIcon size={15} />
-              <span>아이템 보유 현황 ↗</span>
+              <span>아이템 현황 ↗</span>
+            </button>
+          )}
+          {onNavigateToRouletteOdds && (
+            <button
+              onClick={onNavigateToRouletteOdds}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-xs font-bold text-purple-400 transition cursor-pointer"
+            >
+              <SparklesIcon size={15} />
+              <span>룰렛 확률 ↗</span>
             </button>
           )}
           <a
@@ -40,7 +49,7 @@ const GuidePage = ({ onGoHome, onNavigateToRecord, onNavigateToInventory }) => {
           </a>
           <button
             onClick={onGoHome}
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-semibold text-slate-200 transition"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-semibold text-slate-200 transition cursor-pointer"
           >
             <ArrowLeftIcon size={16} />
             <span>메인으로</span>

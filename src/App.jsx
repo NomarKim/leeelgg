@@ -275,6 +275,10 @@ function App() {
             setView("inventory");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
+          onNavigateToRouletteOdds={() => {
+            setView("roulette-odds");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         />
       )}
 
@@ -286,8 +290,26 @@ function App() {
             setView("guide");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
+          onGoRouletteOdds={() => {
+            setView("roulette-odds");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
           initialSearchName={appliedPlayer || ""}
+        />
+      )}
+
+      {view === "roulette-odds" && (
+        <window.RouletteOddsPage
+          onGoHome={handleGoHome}
+          onGoGuide={() => {
+            setView("guide");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onGoInventory={() => {
+            setView("inventory");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         />
       )}
 

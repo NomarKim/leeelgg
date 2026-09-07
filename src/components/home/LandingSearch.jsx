@@ -189,10 +189,10 @@ const LandingSearch = ({
               <h3 className="text-lg font-bold text-white group-hover/card:text-sky-300 transition">
                 LeeeL's Guide
               </h3>
-              <p className="text-xs text-sky-400 font-semibold mt-0.5">내전 규칙 & 아이템 현황</p>
+              <p className="text-xs text-sky-400 font-semibold mt-0.5">내전 규칙, 아이템 현황 & 룰렛 확률</p>
             </div>
 
-            {/* 하위 2개 메뉴 리스트 */}
+            {/* 하위 3개 메뉴 리스트 */}
             <div className="space-y-2.5 pt-2">
               {/* Menu 1: 내전 시참 공식 룰북 */}
               <button
@@ -244,6 +244,33 @@ const LandingSearch = ({
                   </div>
                 </div>
                 <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-amber-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={15} />
+                </div>
+              </button>
+
+              {/* Menu 3: 룰렛 확률 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("roulette-odds");
+                }}
+                className="w-full text-left p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-purple-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-purple-950/30"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-purple-500/20 transition duration-200">
+                    <SparklesIcon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-purple-300 transition">
+                      3. 룰렛 확률
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      위플랩 실시간 후원 룰렛 확률표 & 모의 추첨
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-purple-400 group-hover/btn:translate-x-0.5 transition shrink-0">
                   <ArrowRightIcon size={15} />
                 </div>
               </button>

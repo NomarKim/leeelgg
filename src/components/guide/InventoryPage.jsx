@@ -1,5 +1,5 @@
 // LeeeL's Guide - 아이템 보유 현황 (1~5번 순서 정리 & 안내 사항 반영)
-const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, initialSearchName = "" }) => {
+const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onGoRouletteOdds, onSearchPlayer, initialSearchName = "" }) => {
   const { useState, useMemo } = React;
   const { 
     GiftIcon, SearchIcon, SparklesIcon, ShieldIcon, TrophyIcon, 
@@ -607,7 +607,16 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {onGoRouletteOdds && (
+            <button
+              onClick={onGoRouletteOdds}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-xs sm:text-sm font-bold text-purple-400 transition cursor-pointer"
+            >
+              <SparklesIcon size={16} />
+              <span>룰렛 확률 보기</span>
+            </button>
+          )}
           <button
             onClick={onGoGuide}
             className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-semibold text-sky-300 transition cursor-pointer"
