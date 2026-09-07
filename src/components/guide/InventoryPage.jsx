@@ -230,8 +230,17 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
   const ingameGroups = useMemo(() => {
     return [
       {
+        title: "(0) 레전드 리롤권",
+        badgeColor: "border-yellow-500/40 text-yellow-300 bg-yellow-950/70 shadow-sm shadow-yellow-950/40",
+        theme: "yellow",
+        items: [
+          { name: "리롤권", count: getItemCount(r1Obj, ["리롤권", "리롤"]) }
+        ]
+      },
+      {
         title: "(1) 참여 관련",
         badgeColor: "border-cyan-500/30 text-cyan-400 bg-cyan-950/60",
+        theme: "cyan",
         items: [
           { name: "1회연참권", count: getItemCount(r1Obj, ["1회연참권", "1회 연참권"]) },
           { name: "선참권", count: getItemCount(r1Obj, ["선참권"]) },
@@ -245,6 +254,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       {
         title: "(2) 팀 관련",
         badgeColor: "border-sky-500/30 text-sky-400 bg-sky-950/60",
+        theme: "cyan",
         items: [
           { name: "종같팀/종반팀", count: getItemCount(r1Obj, ["종같팀/종반팀", "종같팀", "종반팀", "종같/종반", "종같팀 / 종반팀"]) },
           { name: "같은팀", count: getItemCount(r1Obj, ["같은팀", "같은 팀"]) },
@@ -257,6 +267,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       {
         title: "(3) 밴픽 관련",
         badgeColor: "border-amber-500/30 text-amber-400 bg-amber-950/60",
+        theme: "amber",
         items: [
           { name: "노밴권", count: getItemCount(r1Obj, ["노밴권", "노벤권", "노밴", "노벤"]) },
           { name: "글밴권", count: getItemCount(r1Obj, ["글밴권", "글벤권", "글밴", "글벤", "글로벌밴권"]) }
@@ -265,6 +276,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       {
         title: "(4) 듀랭 관련 (룰렛1 + 44룰렛)",
         badgeColor: "border-rose-500/30 text-rose-400 bg-rose-950/60",
+        theme: "cyan",
         items: [
           { 
             name: "듀오권", 
@@ -278,6 +290,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       {
         title: "(5) 티어/라인 관련",
         badgeColor: "border-purple-500/30 text-purple-400 bg-purple-950/60",
+        theme: "purple",
         items: [
           { name: "티어변경", count: getItemCount(r1Obj, ["티어변경", "티어 변경"]) },
           { name: "포지션변경", count: getItemCount(r1Obj, ["포지션변경", "포지션 변경", "라인변경"]) },
@@ -287,8 +300,8 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       {
         title: "(6) 기타",
         badgeColor: "border-slate-500/30 text-slate-300 bg-slate-800/60",
+        theme: "cyan",
         items: [
-          { name: "리롤권", count: getItemCount(r1Obj, ["리롤권", "리롤"]) },
           { name: "전챗허용권", count: getItemCount(r1Obj, ["전챗허용권", "전챗", "전챗 허용권"]) },
           { name: "감표권", count: getItemCount(r1Obj, ["감표권", "감표"]) },
           { name: "방송1시간", count: getItemCount(r1Obj, ["방송1시간", "방송 1시간", "방송1시간권"]) }
@@ -414,7 +427,11 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       textStyle = "text-rose-300";
       countStyle = "text-rose-400";
     } else if (isPositive || hasItem) {
-      if (theme === "pink") {
+      if (theme === "yellow" || theme === "gold") {
+        cardStyle = "border-yellow-500/70 bg-yellow-950/60 shadow-md shadow-yellow-950/40 ring-1 ring-yellow-400/30 transform scale-[1.02]";
+        textStyle = "text-yellow-300 font-extrabold";
+        countStyle = "text-yellow-400 font-black";
+      } else if (theme === "pink") {
         cardStyle = "border-pink-500/60 bg-pink-950/50 shadow-md shadow-pink-950/30 transform scale-[1.02]";
         textStyle = "text-pink-300";
         countStyle = "text-pink-400";
@@ -867,7 +884,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                     </h5>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
-                    {group.items.map((item) => renderItemSlot(item, "cyan"))}
+                    {group.items.map((item) => renderItemSlot(item, group.theme || "cyan"))}
                   </div>
                 </div>
               ))}
