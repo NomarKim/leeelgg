@@ -129590,7 +129590,7 @@ window.MOCK_DATA = {
       },
       {
         "name": "이터널플레이",
-        "wins": 0.0,
+        "wins": 0,
         "losses": 0,
         "roulette": 0,
         "mannerPenalty": 0,
@@ -131511,7 +131511,7 @@ window.MOCK_DATA = {
       {
         "name": "홍시",
         "wins": 0,
-        "losses": 0.0,
+        "losses": 0,
         "roulette": 0,
         "mannerPenalty": 0,
         "leaverPenalty": 0,
@@ -131919,7 +131919,7 @@ window.MOCK_DATA = {
       {
         "name": "피즐리",
         "wins": 0,
-        "losses": 0.0,
+        "losses": 0,
         "roulette": 0,
         "mannerPenalty": 0,
         "leaverPenalty": 0,
@@ -132171,7 +132171,7 @@ window.MOCK_DATA = {
       {
         "name": "뇌대리",
         "wins": 0,
-        "losses": 0.0,
+        "losses": 0,
         "roulette": 1.0,
         "mannerPenalty": 0,
         "leaverPenalty": 0,
@@ -132866,7 +132866,7 @@ window.MOCK_DATA = {
       },
       {
         "name": "부러진칼날",
-        "wins": 0.0,
+        "wins": 0,
         "losses": 3.0,
         "roulette": 0,
         "mannerPenalty": 0,
@@ -133155,7 +133155,7 @@ window.MOCK_DATA = {
       {
         "name": "극치킨",
         "wins": 1.0,
-        "losses": 0.0,
+        "losses": 0,
         "roulette": 0,
         "mannerPenalty": 0,
         "leaverPenalty": 0,
@@ -133334,7 +133334,7 @@ window.MOCK_DATA = {
       },
       {
         "name": "곤냥",
-        "wins": 0.0,
+        "wins": 0,
         "losses": 0,
         "roulette": 0,
         "mannerPenalty": 0,
@@ -134812,7 +134812,6 @@ window.MOCK_DATA = {
     "deathnote": [
       {
         "name": "독사",
-        "sheetRow": 2,
         "deathnotes": [
           {
             "round": 2,
@@ -134831,7 +134830,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "정재",
-        "sheetRow": 3,
         "deathnotes": [
           {
             "round": 2,
@@ -134850,7 +134848,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "딩고",
-        "sheetRow": 4,
         "deathnotes": [
           {
             "round": 1,
@@ -134864,7 +134861,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "중기",
-        "sheetRow": 5,
         "deathnotes": [
           {
             "round": 1,
@@ -134888,7 +134884,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "잎새",
-        "sheetRow": 6,
         "deathnotes": [
           {
             "round": 1,
@@ -134902,7 +134897,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "승케",
-        "sheetRow": 7,
         "deathnotes": [
           {
             "round": 1,
@@ -134921,7 +134915,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "헤카림",
-        "sheetRow": 10,
         "deathnotes": [
           {
             "round": 1,
@@ -134935,7 +134928,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "블루",
-        "sheetRow": 12,
         "deathnotes": [
           {
             "round": 2,
@@ -134954,7 +134946,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "꿀꿀",
-        "sheetRow": 13,
         "deathnotes": [
           {
             "round": 1,
@@ -134973,7 +134964,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "탑솔",
-        "sheetRow": 14,
         "deathnotes": [
           {
             "round": 1,
@@ -134987,7 +134977,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "천사",
-        "sheetRow": 15,
         "deathnotes": [
           {
             "round": 1,
@@ -135011,7 +135000,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "구의린",
-        "sheetRow": 16,
         "deathnotes": [
           {
             "round": 1,
@@ -135025,7 +135013,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "잘지내지",
-        "sheetRow": 17,
         "deathnotes": [
           {
             "round": 1,
@@ -135039,7 +135026,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "돈부리",
-        "sheetRow": 18,
         "deathnotes": [
           {
             "round": 1,
@@ -135058,7 +135044,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "우잼",
-        "sheetRow": 20,
         "deathnotes": [
           {
             "round": 1,
@@ -135072,7 +135057,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "에시코기",
-        "sheetRow": 21,
         "deathnotes": [
           {
             "round": 1,
@@ -135091,7 +135075,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "쓸애기",
-        "sheetRow": 22,
         "deathnotes": [
           {
             "round": 1,
@@ -135105,7 +135088,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "망치",
-        "sheetRow": 23,
         "deathnotes": [
           {
             "round": 1,
@@ -135119,7 +135101,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "부원장",
-        "sheetRow": 24,
         "deathnotes": [
           {
             "round": 1,
@@ -135143,7 +135124,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "민영",
-        "sheetRow": 25,
         "deathnotes": [
           {
             "round": 1,
@@ -135157,7 +135137,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "재민",
-        "sheetRow": 26,
         "deathnotes": [
           {
             "round": 1,
@@ -135181,7 +135160,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "아들",
-        "sheetRow": 27,
         "deathnotes": [
           {
             "round": 1,
@@ -135195,7 +135173,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "퀵뷰",
-        "sheetRow": 28,
         "deathnotes": [
           {
             "round": 1,
@@ -135209,7 +135186,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "억까",
-        "sheetRow": 29,
         "deathnotes": [
           {
             "round": 1,
@@ -135223,7 +135199,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "노말",
-        "sheetRow": 30,
         "deathnotes": [
           {
             "round": 1,
@@ -135237,7 +135212,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "사건행",
-        "sheetRow": 31,
         "deathnotes": [
           {
             "round": 1,
@@ -135256,7 +135230,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "용선",
-        "sheetRow": 32,
         "deathnotes": [
           {
             "round": 1,
@@ -135275,7 +135248,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "스코",
-        "sheetRow": 33,
         "deathnotes": [
           {
             "round": 1,
@@ -135294,7 +135266,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "루아",
-        "sheetRow": 34,
         "deathnotes": [
           {
             "round": 3,
@@ -135313,7 +135284,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "쯔다",
-        "sheetRow": 35,
         "deathnotes": [
           {
             "round": 1,
@@ -135327,7 +135297,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "딩거버거",
-        "sheetRow": 36,
         "deathnotes": [
           {
             "round": 1,
@@ -135341,7 +135310,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "굴카",
-        "sheetRow": 37,
         "deathnotes": [
           {
             "round": 1,
@@ -135355,7 +135323,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "상턱",
-        "sheetRow": 38,
         "deathnotes": [
           {
             "round": 1,
@@ -135369,7 +135336,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "싫다",
-        "sheetRow": 39,
         "deathnotes": [
           {
             "round": 1,
@@ -135388,7 +135354,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "닭발",
-        "sheetRow": 40,
         "deathnotes": [
           {
             "round": 1,
@@ -135402,7 +135367,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "이간탱",
-        "sheetRow": 41,
         "deathnotes": [
           {
             "round": 1,
@@ -135431,7 +135395,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "울정",
-        "sheetRow": 42,
         "deathnotes": [
           {
             "round": 1,
@@ -135445,7 +135408,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "미니",
-        "sheetRow": 43,
         "deathnotes": [
           {
             "round": 1,
@@ -135459,7 +135421,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "새콤",
-        "sheetRow": 44,
         "deathnotes": [
           {
             "round": 1,
@@ -135483,7 +135444,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "주도권",
-        "sheetRow": 45,
         "deathnotes": [
           {
             "round": 1,
@@ -135502,7 +135462,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "열줌",
-        "sheetRow": 47,
         "deathnotes": [
           {
             "round": 1,
@@ -135521,7 +135480,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "강우",
-        "sheetRow": 48,
         "deathnotes": [
           {
             "round": 1,
@@ -135535,7 +135493,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "몽향",
-        "sheetRow": 49,
         "deathnotes": [
           {
             "round": 1,
@@ -135549,7 +135506,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "건희",
-        "sheetRow": 50,
         "deathnotes": [
           {
             "round": 1,
@@ -135573,7 +135529,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "종삼",
-        "sheetRow": 51,
         "deathnotes": [
           {
             "round": 2,
@@ -135592,7 +135547,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "크림",
-        "sheetRow": 52,
         "deathnotes": [
           {
             "round": 1,
@@ -135611,7 +135565,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "낑깡",
-        "sheetRow": 53,
         "deathnotes": [
           {
             "round": 1,
@@ -135630,7 +135583,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "나나",
-        "sheetRow": 54,
         "deathnotes": [
           {
             "round": 1,
@@ -135649,7 +135601,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "만보",
-        "sheetRow": 55,
         "deathnotes": [
           {
             "round": 1,
@@ -135668,7 +135619,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "미드",
-        "sheetRow": 56,
         "deathnotes": [
           {
             "round": 1,
@@ -135682,7 +135632,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "실로",
-        "sheetRow": 57,
         "deathnotes": [
           {
             "round": 1,
@@ -135696,7 +135645,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "수달",
-        "sheetRow": 58,
         "deathnotes": [
           {
             "round": 1,
@@ -135710,7 +135658,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "탱냥",
-        "sheetRow": 59,
         "deathnotes": [
           {
             "round": 1,
@@ -135734,7 +135681,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "히키쨔",
-        "sheetRow": 60,
         "deathnotes": [
           {
             "round": 1,
@@ -135753,7 +135699,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "푸우",
-        "sheetRow": 61,
         "deathnotes": [
           {
             "round": 1,
@@ -135772,7 +135717,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "나양",
-        "sheetRow": 62,
         "deathnotes": [
           {
             "round": 1,
@@ -135796,7 +135740,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "혀나미",
-        "sheetRow": 64,
         "deathnotes": [
           {
             "round": 1,
@@ -135810,7 +135753,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "졍쓰",
-        "sheetRow": 65,
         "deathnotes": [
           {
             "round": 1,
@@ -135824,7 +135766,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "작승",
-        "sheetRow": 66,
         "deathnotes": [
           {
             "round": 1,
@@ -135843,7 +135784,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "후하",
-        "sheetRow": 67,
         "deathnotes": [
           {
             "round": 1,
@@ -135862,7 +135802,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "성우",
-        "sheetRow": 68,
         "deathnotes": [
           {
             "round": 1,
@@ -135876,7 +135815,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "랄부",
-        "sheetRow": 69,
         "deathnotes": [
           {
             "round": 1,
@@ -135890,7 +135828,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "장카",
-        "sheetRow": 70,
         "deathnotes": [
           {
             "round": 1,
@@ -135909,7 +135846,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "롤린",
-        "sheetRow": 71,
         "deathnotes": [
           {
             "round": 1,
@@ -135923,7 +135859,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "팔봉",
-        "sheetRow": 73,
         "deathnotes": [
           {
             "round": 1,
@@ -135942,7 +135877,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "볼츠몽",
-        "sheetRow": 74,
         "deathnotes": [
           {
             "round": 1,
@@ -135956,7 +135890,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "마타",
-        "sheetRow": 75,
         "deathnotes": [
           {
             "round": 1,
@@ -135975,7 +135908,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "막내",
-        "sheetRow": 76,
         "deathnotes": [
           {
             "round": 1,
@@ -135994,7 +135926,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "바윤",
-        "sheetRow": 77,
         "deathnotes": [
           {
             "round": 1,
@@ -136013,7 +135944,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "효니",
-        "sheetRow": 78,
         "deathnotes": [
           {
             "round": 1,
@@ -136032,7 +135962,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "투두",
-        "sheetRow": 79,
         "deathnotes": [
           {
             "round": 1,
@@ -136051,7 +135980,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "디그",
-        "sheetRow": 80,
         "deathnotes": [
           {
             "round": 1,
@@ -136070,14 +135998,12 @@ window.MOCK_DATA = {
       },
       {
         "name": "냠냠",
-        "sheetRow": 81,
         "deathnotes": [],
         "teamBan": "8.5 세달정지 + 2달",
         "entries": []
       },
       {
         "name": "이쓸",
-        "sheetRow": 82,
         "deathnotes": [
           {
             "round": 1,
@@ -136096,7 +136022,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "찬우",
-        "sheetRow": 83,
         "deathnotes": [
           {
             "round": 1,
@@ -136110,7 +136035,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "추암",
-        "sheetRow": 84,
         "deathnotes": [
           {
             "round": 1,
@@ -136129,7 +136053,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "현빈",
-        "sheetRow": 86,
         "deathnotes": [
           {
             "round": 1,
@@ -136143,7 +136066,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "재훈",
-        "sheetRow": 87,
         "deathnotes": [
           {
             "round": 1,
@@ -136157,7 +136079,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "겨울",
-        "sheetRow": 88,
         "deathnotes": [
           {
             "round": 2,
@@ -136176,7 +136097,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "뜅화니",
-        "sheetRow": 89,
         "deathnotes": [
           {
             "round": 1,
@@ -136200,7 +136120,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "와쏘베쏘",
-        "sheetRow": 90,
         "deathnotes": [
           {
             "round": 2,
@@ -136224,7 +136143,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "베베",
-        "sheetRow": 91,
         "deathnotes": [
           {
             "round": 1,
@@ -136243,7 +136161,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "나르",
-        "sheetRow": 92,
         "deathnotes": [
           {
             "round": 1,
@@ -136257,7 +136174,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "안라국",
-        "sheetRow": 93,
         "deathnotes": [
           {
             "round": 1,
@@ -136271,7 +136187,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "지민",
-        "sheetRow": 94,
         "deathnotes": [
           {
             "round": 1,
@@ -136285,7 +136200,6 @@ window.MOCK_DATA = {
       },
       {
         "name": "뷴대장",
-        "sheetRow": 95,
         "deathnotes": [
           {
             "round": 1,
@@ -136304,14 +136218,25 @@ window.MOCK_DATA = {
       },
       {
         "name": "리엘",
-        "sheetRow": 96,
         "deathnotes": [],
         "teamBan": "8.14",
         "entries": []
       },
       {
         "name": "모노",
-        "sheetRow": 97,
+        "deathnotes": [
+          {
+            "round": 1,
+            "reason": "라인말안해줌"
+          }
+        ],
+        "teamBan": null,
+        "entries": [
+          "[1열] 라인말안해줌"
+        ]
+      },
+      {
+        "name": "길태준",
         "deathnotes": [
           {
             "round": 1,
@@ -140054,7 +139979,12 @@ window.MOCK_DATA = {
         "roulette44": {},
         "tft": {},
         "praises": [],
-        "deathnote": [],
+        "deathnote": [
+          {
+            "round": 1,
+            "reason": "라인말안해줌"
+          }
+        ],
         "teamBan": null,
         "totalItemCount": 3.0
       },
@@ -144330,7 +144260,7 @@ window.MOCK_DATA = {
         "roulette2": {},
         "points": {
           "name": "곤냥",
-          "wins": 0.0,
+          "wins": 0,
           "losses": 0,
           "roulette": 0,
           "mannerPenalty": 0,
@@ -149465,7 +149395,7 @@ window.MOCK_DATA = {
         "roulette2": {},
         "points": {
           "name": "이터널플레이",
-          "wins": 0.0,
+          "wins": 0,
           "losses": 0,
           "roulette": 0,
           "mannerPenalty": 0,
@@ -149765,7 +149695,7 @@ window.MOCK_DATA = {
         "points": {
           "name": "피즐리",
           "wins": 0,
-          "losses": 0.0,
+          "losses": 0,
           "roulette": 0,
           "mannerPenalty": 0,
           "leaverPenalty": 0,
@@ -151840,7 +151770,7 @@ window.MOCK_DATA = {
         "points": {
           "name": "홍시",
           "wins": 0,
-          "losses": 0.0,
+          "losses": 0,
           "roulette": 0,
           "mannerPenalty": 0,
           "leaverPenalty": 0,
@@ -152645,7 +152575,7 @@ window.MOCK_DATA = {
         "points": {
           "name": "뇌대리",
           "wins": 0,
-          "losses": 0.0,
+          "losses": 0,
           "roulette": 1.0,
           "mannerPenalty": 0,
           "leaverPenalty": 0,
@@ -153504,7 +153434,7 @@ window.MOCK_DATA = {
         "roulette2": {},
         "points": {
           "name": "부러진칼날",
-          "wins": 0.0,
+          "wins": 0,
           "losses": 3.0,
           "roulette": 0,
           "mannerPenalty": 0,
@@ -153781,7 +153711,7 @@ window.MOCK_DATA = {
         "points": {
           "name": "극치킨",
           "wins": 1.0,
-          "losses": 0.0,
+          "losses": 0,
           "roulette": 0,
           "mannerPenalty": 0,
           "leaverPenalty": 0,

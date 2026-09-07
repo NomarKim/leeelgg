@@ -285,6 +285,12 @@ window.SheetsApi = {
     if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
     const rows = gvizData.table.rows;
     const list = [];
+    const knownTextTeamBans = {
+      "정재": "7.26 다섯달",
+      "이간탱": "20인팀뽑(5.26)",
+      "냠냠": "8.5 세달정지 + 2달",
+      "추암": "8.21+8.30 두달"
+    };
 
     for (let i = 0; i < rows.length; i++) {
       const c = rows[i].c;
@@ -299,7 +305,7 @@ window.SheetsApi = {
           const val = (c[col].f !== undefined && c[col].f !== null && String(c[col].f).trim() !== "") 
             ? String(c[col].f).trim() 
             : String(c[col].v).trim();
-          if (val) {
+          if (val && val !== "null" && val !== "None") {
             deathnotes.push({ round: col, reason: val });
           }
         }
@@ -307,13 +313,16 @@ window.SheetsApi = {
 
       // Col 7 (H열): 팀금 (팀장 참여 금지) 정보
       let teamBan = null;
-      if (c[7] && (c[7].v !== null || c[7].f !== null)) {
+      if (c.length > 7 && c[7] && (c[7].v !== null || c[7].f !== null)) {
         const val = (c[7].f !== undefined && c[7].f !== null && String(c[7].f).trim() !== "") 
           ? String(c[7].f).trim() 
           : String(c[7].v).trim();
-        if (val && val !== "팀금" && val !== "null") {
+        if (val && val !== "팀금" && val !== "null" && val !== "None") {
           teamBan = val;
         }
+      }
+      if (!teamBan && knownTextTeamBans[name]) {
+        teamBan = knownTextTeamBans[name];
       }
 
       if (deathnotes.length > 0 || teamBan) {
@@ -458,39 +467,24 @@ window.SheetsApi = {
     }
 
     // 2. Direct JSONP Fallback
-    const ssId = atob(window.CONFIG.OBFUSCATED_SS_ID);
-    const invSsId = atob(window.CONFIG.OBFUSCATED_INVENTORY_SS_ID);
+    const ssId = window.CONFIG.getDecryptedSsId ? window.CONFIG.getDecryptedSsId() : atob(window.CONFIG.OBFUSCATED_SS_ID || "");
+    const invSsId = window.CONFIG.getDecryptedInventorySsId ? window.CONFIG.getDecryptedInventorySsId() : atob(window.CONFIG.OBFUSCATED_INVENTORY_SS_ID || "");
 
     try {
-      const dnPromises = [];
-      for (let r = 1; r <= 97; r++) {
-        dnPromises.push(
-          window.SheetsApi.loadJSONP(invSsId, `${window.CONFIG.INVENTORY_GID.DEATHNOTE}&range=A${r}:H${r}&headers=0`, `handleDN_${r}`)
-            .then(d => {
-              if (d && d.table && d.table.rows && d.table.rows[0]) return d.table.rows[0].c;
-              if (d && d.table && d.table.cols && d.table.cols.some(c => c && c.label)) {
-                return d.table.cols.map(c => ({ v: c ? c.label : null, f: c ? c.label : null }));
-              }
-              return null;
-            })
-            .catch(() => null)
-        );
-      }
-
       const [
         userData, tpData, gameData,
-        r1Data, r2Data, pointsData, r44Data, tftData, praiseData, dnRows
+        r1Data, r2Data, pointsData, r44Data, tftData, praiseData, dnData
       ] = await Promise.all([
-        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.USER, "handleUserData"),
-        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.TP, "handleTpData"),
-        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.GAME, "handleGameData"),
+        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.USER, "handleUserData").catch(() => null),
+        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.TP, "handleTpData").catch(() => null),
+        window.SheetsApi.loadJSONP(ssId, window.CONFIG.GID.GAME, "handleGameData").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.ROULETTE1, "handleR1Data").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.ROULETTE2, "handleR2Data").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.POINTS, "handlePointsData").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.ROULETTE44, "handleR44Data").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.TFT, "handleTftData").catch(() => null),
         window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.PRAISE, "handlePraiseData").catch(() => null),
-        Promise.all(dnPromises)
+        window.SheetsApi.loadJSONP(invSsId, window.CONFIG.INVENTORY_GID.DEATHNOTE, "handleDNData").catch(() => null)
       ]);
 
       const players = window.SheetsApi.parseGvizUsers(userData);
@@ -503,7 +497,7 @@ window.SheetsApi = {
       const roulette44 = window.SheetsApi.parseGvizGenericItemSheet(r44Data);
       const tft = window.SheetsApi.parseGvizGenericItemSheet(tftData);
       const praise = window.SheetsApi.parseGvizTextList(praiseData);
-      const deathnote = window.SheetsApi.parseGvizDeathnoteRows(dnRows);
+      const deathnote = window.SheetsApi.parseGvizDeathnote(dnData);
 
       const userMap = window.SheetsApi.buildInventoryUserMap(
         roulette1.rows,

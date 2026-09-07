@@ -33,13 +33,19 @@ window.DateUtils = {
     return `${year}-${month}-${day}`;
   },
 
-  // 오늘 날짜 및 N일 전 날짜 기본값 생성
-  getDefaultDateRange: (daysAgo = 7) => {
+  // 오늘 날짜 및 기본 날짜 범위 생성 (기본값: 데이터 시작일 2024-05-01 ~ 오늘)
+  getDefaultDateRange: (daysAgo = null) => {
     const today = new Date();
-    const past = new Date();
-    past.setDate(today.getDate() - daysAgo);
+    if (daysAgo !== null) {
+      const past = new Date();
+      past.setDate(today.getDate() - daysAgo);
+      return {
+        startDate: window.DateUtils.getFormattedDate(past),
+        endDate: window.DateUtils.getFormattedDate(today)
+      };
+    }
     return {
-      startDate: window.DateUtils.getFormattedDate(past),
+      startDate: "2024-05-01",
       endDate: window.DateUtils.getFormattedDate(today)
     };
   }

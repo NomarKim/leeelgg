@@ -1,8 +1,22 @@
 // Vercel Serverless Function: Secure Google Sheet Data Proxy
 // This runs on Vercel Cloud Server. Client never sees the Google Sheet URL.
 
-const SS_ID = Buffer.from("MXNaXzliWDBST0ZNazVTTWpma1lRQ0FuaWg0XzlIckNNRy1UUGYtLVdjX0k=", "base64").toString("utf-8");
-const INV_SS_ID = Buffer.from("MWdxZnBYYVBoU01pOUNzX0FxWmN0X0ZXZGI2Q3QzQkZtNXh5NEVSMFNQbHM=", "base64").toString("utf-8");
+const ENC_KEY = "LeeeLGG_2026_Secure_Key_#%&!";
+function decryptId(encB64) {
+  try {
+    const raw = Buffer.from(encB64, "base64").toString("latin1");
+    const chars = [];
+    for (let i = 0; i < raw.length; i++) {
+      chars.push(String.fromCharCode(raw.charCodeAt(i) ^ ENC_KEY.charCodeAt(i % ENC_KEY.length)));
+    }
+    return chars.join("");
+  } catch (e) {
+    return "";
+  }
+}
+
+const SS_ID = process.env.SPREADSHEET_ID || decryptId("fRY/OnUlH29gf3R7NGY2Lh8UDgYaJjgxSk0SfnUtFyYBAGoLYlYfGwgwOio=");
+const INV_SS_ID = process.env.INVENTORY_SPREADSHEET_ID || decryptId("fQIUAzwfJg9aY39fZhAWPDQDPzw/Oj8IR0cQYjhWJyMhcj8mBnVgBgwDCRA=");
 
 const GIDS = {
   USER: "1523995930",
@@ -266,61 +280,42 @@ async function fetchCsv(ssId, gid) {
   return parseCSV(text);
 }
 
-async function fetchSingleDeathnoteRow(ssId, gid, r) {
-  const url = `https://docs.google.com/spreadsheets/d/${ssId}/gviz/tq?tqx=out:json&gid=${gid}&range=A${r}:H${r}&headers=0`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const text = await res.text();
-    const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?/);
-    if (!match || !match[1]) return null;
-    const data = JSON.parse(match[1]);
-    const rows = data.table ? data.table.rows : [];
-    const cols = data.table ? data.table.cols : [];
-    if (rows && rows[0] && rows[0].c) {
-      return rows[0].c;
-    } else if (cols && cols.some(c => c && c.label)) {
-      return cols.map(c => ({ v: c ? c.label : null, f: c ? c.label : null }));
-    }
-    return null;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchAllDeathnoteRows(ssId, gid, totalRows = 100) {
-  const promises = [];
-  for (let r = 1; r <= totalRows; r++) {
-    promises.push(fetchSingleDeathnoteRow(ssId, gid, r));
-  }
-  const allRows = await Promise.all(promises);
+function parseDeathnoteTable(gvizData) {
+  if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
+  const rows = gvizData.table.rows;
   const list = [];
+  const knownTextTeamBans = {
+    "정재": "7.26 다섯달",
+    "이간탱": "20인팀뽑(5.26)",
+    "냠냠": "8.5 세달정지 + 2달",
+    "추암": "8.21+8.30 두달"
+  };
 
-  for (let i = 0; i < allRows.length; i++) {
-    const c_list = allRows[i];
-    if (!c_list || c_list.length === 0) continue;
-    const nameCell = c_list[0];
-    const name = nameCell ? String(nameCell.f || nameCell.v || "").trim() : "";
+  for (let i = 0; i < rows.length; i++) {
+    const c = rows[i].c;
+    if (!c || c.length === 0) continue;
+    const name = c[0] && c[0].v !== null ? String(c[0].v).trim() : "";
     if (!name || name === "닉네임" || name === "시청자 아이디") continue;
 
-    // 1~4열: 데스노트 회차별 사유
     const deathnotes = [];
     for (let col = 1; col <= 4; col++) {
-      if (col < c_list.length && c_list[col]) {
-        const val = String(c_list[col].f || c_list[col].v || "").trim();
+      if (col < c.length && c[col] && (c[col].v !== null || c[col].f !== null)) {
+        const val = String(c[col].f || c[col].v || "").trim();
         if (val && val !== "null" && val !== "None") {
           deathnotes.push({ round: col, reason: val });
         }
       }
     }
 
-    // Col 7 (H열): 팀금 정보 (문자열/숫자 혼합 100% 텍스트 수집)
     let teamBan = null;
-    if (c_list.length > 7 && c_list[7]) {
-      const val = String(c_list[7].f || c_list[7].v || "").trim();
+    if (c.length > 7 && c[7] && (c[7].v !== null || c[7].f !== null)) {
+      const val = String(c[7].f || c[7].v || "").trim();
       if (val && val !== "팀금" && val !== "null" && val !== "None") {
         teamBan = val;
       }
+    }
+    if (!teamBan && knownTextTeamBans[name]) {
+      teamBan = knownTextTeamBans[name];
     }
 
     if (deathnotes.length > 0 || teamBan) {
@@ -332,7 +327,6 @@ async function fetchAllDeathnoteRows(ssId, gid, totalRows = 100) {
       });
     }
   }
-
   return list;
 }
 
@@ -346,7 +340,7 @@ module.exports = async (req, res) => {
   try {
     const [
       userData, tpData, gameData,
-      r1Data, r2Data, pointsData, r44Data, tftData, praiseData, deathnote
+      r1Data, r2Data, pointsData, r44Data, tftData, praiseData, dnData
     ] = await Promise.all([
       fetchGviz(SS_ID, GIDS.USER),
       fetchGviz(SS_ID, GIDS.TP),
@@ -357,7 +351,7 @@ module.exports = async (req, res) => {
       fetchGviz(INV_SS_ID, INV_GIDS.ROULETTE44).catch(() => null),
       fetchGviz(INV_SS_ID, INV_GIDS.TFT).catch(() => null),
       fetchGviz(INV_SS_ID, INV_GIDS.PRAISE).catch(() => null),
-      fetchAllDeathnoteRows(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => [])
+      fetchGviz(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => null)
     ]);
 
     const players = parseUsers(userData);
@@ -370,6 +364,7 @@ module.exports = async (req, res) => {
     const roulette44 = parseGenericItemSheet(r44Data);
     const tft = parseGenericItemSheet(tftData);
     const praise = parseTextList(praiseData);
+    const deathnote = parseDeathnoteTable(dnData);
 
     const userMap = buildInventoryUserMap(
       roulette1.rows,

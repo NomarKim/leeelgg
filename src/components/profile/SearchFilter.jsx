@@ -21,15 +21,21 @@ const SearchFilter = ({
     ).slice(0, 10);
   }, [searchName, allPlayerNames, appliedPlayer]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      onInquire();
-    }
+  const handleApplyPreset = (days) => {
+    const range = window.DateUtils.getDefaultDateRange(days);
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
+  };
+
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setShowSuggestions(false);
+    onInquire();
   };
 
   return (
     <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative z-30">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
         {/* Player Name Search Input */}
         <div className="lg:col-span-4 relative">
           <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
@@ -45,7 +51,6 @@ const SearchFilter = ({
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
-              onKeyDown={handleKeyDown}
               placeholder="닉네임 또는 게임 아이디 입력"
               className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-xl pl-11 pr-28 py-3 text-slate-100 placeholder-slate-500 transition duration-200 outline-none"
             />
@@ -66,11 +71,16 @@ const SearchFilter = ({
                   <li key={name}>
                     <button
                       type="button"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        setSearchName(name);
+                        setShowSuggestions(false);
+                      }}
                       onClick={() => {
                         setSearchName(name);
                         setShowSuggestions(false);
                       }}
-                      className="w-full text-left px-4 py-3 hover:bg-slate-800 transition duration-150 flex items-center justify-between text-sm"
+                      className="w-full text-left px-4 py-3 hover:bg-slate-800 transition duration-150 flex items-center justify-between text-sm cursor-pointer"
                     >
                       <span className="font-semibold text-slate-200">{name}</span>
                       <span className="text-xs text-slate-500">선택</span>
@@ -82,46 +92,72 @@ const SearchFilter = ({
           )}
         </div>
 
-        {/* Date Inputs */}
-        <div className="lg:col-span-5 grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-              <CalendarIcon />
-              <span>조회 시작일</span>
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-950 rounded-xl px-4 py-2.5 text-slate-100 font-bold transition duration-200 outline-none cursor-pointer shadow-lg shadow-black/30 text-sm"
-            />
+        {/* Date Inputs & Presets */}
+        <div className="lg:col-span-5 space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                <CalendarIcon />
+                <span>조회 시작일</span>
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-950 rounded-xl px-4 py-2.5 text-slate-100 font-bold transition duration-200 outline-none cursor-pointer shadow-lg shadow-black/30 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                <CalendarIcon />
+                <span>조회 종료일</span>
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-950 rounded-xl px-4 py-2.5 text-slate-100 font-bold transition duration-200 outline-none cursor-pointer shadow-lg shadow-black/30 text-sm"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-              <CalendarIcon />
-              <span>조회 종료일</span>
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-950 rounded-xl px-4 py-2.5 text-slate-100 font-bold transition duration-200 outline-none cursor-pointer shadow-lg shadow-black/30 text-sm"
-            />
+          {/* Quick Preset Buttons for Mobile & Desktop */}
+          <div className="flex items-center space-x-2 pt-0.5">
+            <span className="text-[11px] text-slate-400 font-semibold">간편 설정:</span>
+            <button
+              type="button"
+              onClick={() => handleApplyPreset(null)}
+              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-slate-700 transition cursor-pointer"
+            >
+              전체 기간
+            </button>
+            <button
+              type="button"
+              onClick={() => handleApplyPreset(30)}
+              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
+            >
+              최근 30일
+            </button>
+            <button
+              type="button"
+              onClick={() => handleApplyPreset(7)}
+              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
+            >
+              최근 7일
+            </button>
           </div>
         </div>
 
         {/* Action Button */}
         <div className="lg:col-span-3">
           <button
-            type="button"
-            onClick={onInquire}
-            className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg shadow-cyan-950/20 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
+            type="submit"
+            className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg shadow-cyan-950/20 transition-all duration-200 flex items-center justify-center space-x-2 text-sm cursor-pointer"
           >
             <SearchIcon size={16} />
             <span>조회하기 (업데이트)</span>
           </button>
         </div>
-      </div>
+      </form>
     </section>
   );
 };

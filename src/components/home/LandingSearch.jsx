@@ -105,8 +105,12 @@ const LandingSearch = ({
                     <button
                       key={name}
                       type="button"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        handleSelectSuggestion(name);
+                      }}
                       onClick={() => handleSelectSuggestion(name)}
-                      className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-cyan-950/30 hover:text-cyan-300 transition flex items-center justify-between group"
+                      className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-cyan-950/30 hover:text-cyan-300 transition flex items-center justify-between group cursor-pointer"
                     >
                       <span>{name}</span>
                       <span className="text-xs text-slate-500 group-hover:text-cyan-400 transition">선택 ↵</span>
@@ -118,45 +122,85 @@ const LandingSearch = ({
           </div>
 
           {/* Date Filter & Action Button */}
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-1">
-            {/* Start Date */}
-            <div className="sm:col-span-4">
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
-                <CalendarIcon size={14} />
-                <span>조회 시작일</span>
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-slate-950 border-2 border-slate-800 hover:border-cyan-500/50 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold transition outline-none cursor-pointer"
-              />
+          <div className="space-y-2 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              {/* Start Date */}
+              <div className="sm:col-span-4">
+                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
+                  <CalendarIcon size={14} />
+                  <span>조회 시작일</span>
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full bg-slate-950 border-2 border-slate-800 hover:border-cyan-500/50 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold transition outline-none cursor-pointer"
+                />
+              </div>
+
+              {/* End Date */}
+              <div className="sm:col-span-4">
+                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
+                  <CalendarIcon size={14} />
+                  <span>조회 종료일</span>
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full bg-slate-950 border-2 border-slate-800 hover:border-cyan-500/50 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold transition outline-none cursor-pointer"
+                />
+              </div>
+
+              {/* Big Action Button */}
+              <div className="sm:col-span-4 flex items-end">
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 active:scale-[0.98] text-white font-extrabold py-3 px-5 rounded-xl shadow-lg shadow-cyan-950/50 transition-all duration-200 flex items-center justify-center space-x-2 text-base cursor-pointer"
+                >
+                  <span>조회</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            {/* End Date */}
-            <div className="sm:col-span-4">
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
-                <CalendarIcon size={14} />
-                <span>조회 종료일</span>
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full bg-slate-950 border-2 border-slate-800 hover:border-cyan-500/50 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold transition outline-none cursor-pointer"
-              />
-            </div>
-
-            {/* Big Action Button */}
-            <div className="sm:col-span-4 flex items-end">
+            {/* Quick Presets for Mobile */}
+            <div className="flex items-center space-x-2 pt-0.5">
+              <span className="text-[11px] text-slate-400 font-semibold">간편 설정:</span>
               <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 active:scale-[0.98] text-white font-extrabold py-3 px-5 rounded-xl shadow-lg shadow-cyan-950/50 transition-all duration-200 flex items-center justify-center space-x-2 text-base"
+                type="button"
+                onClick={() => {
+                  const range = window.DateUtils.getDefaultDateRange(null);
+                  setStartDate(range.startDate);
+                  setEndDate(range.endDate);
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-slate-700 transition cursor-pointer"
               >
-                <span>조회</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-                </svg>
+                전체 기간
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const range = window.DateUtils.getDefaultDateRange(30);
+                  setStartDate(range.startDate);
+                  setEndDate(range.endDate);
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
+              >
+                최근 30일
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const range = window.DateUtils.getDefaultDateRange(7);
+                  setStartDate(range.startDate);
+                  setEndDate(range.endDate);
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition cursor-pointer"
+              >
+                최근 7일
               </button>
             </div>
           </div>

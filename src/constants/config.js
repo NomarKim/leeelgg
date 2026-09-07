@@ -1,8 +1,26 @@
 // Google Spreadsheet Configuration & Global Constants
-window.CONFIG = {
-  // 구글 스프레드시트 ID (Base64 인코딩)
-  OBFUSCATED_SS_ID: "MXNaXzliWDBST0ZNazVTTWpma1lRQ0FuaWg0XzlIckNNRy1UUGYtLVdjX0k=",
-  OBFUSCATED_INVENTORY_SS_ID: "MWdxZnBYYVBoU01pOUNzX0FxWmN0X0ZXZGI2Q3QzQkZtNXh5NEVSMFNQbHM=",
+(function() {
+  const ENC_KEY = "LeeeLGG_2026_Secure_Key_#%&!";
+  
+  function decryptId(encB64) {
+    try {
+      const raw = atob(encB64);
+      const chars = [];
+      for (let i = 0; i < raw.length; i++) {
+        chars.push(String.fromCharCode(raw.charCodeAt(i) ^ ENC_KEY.charCodeAt(i % ENC_KEY.length)));
+      }
+      return chars.join("");
+    } catch (e) {
+      return "";
+    }
+  }
+
+  window.CONFIG = {
+    // 암호화된 구글 스프레드시트 ID (XOR Cipher + Base64)
+    ENC_SS_ID: "fRY/OnUlH29gf3R7NGY2Lh8UDgYaJjgxSk0SfnUtFyYBAGoLYlYfGwgwOio=",
+    ENC_INVENTORY_SS_ID: "fQIUAzwfJg9aY39fZhAWPDQDPzw/Oj8IR0cQYjhWJyMhcj8mBnVgBgwDCRA=",
+    getDecryptedSsId: () => decryptId(window.CONFIG.ENC_SS_ID),
+    getDecryptedInventorySsId: () => decryptId(window.CONFIG.ENC_INVENTORY_SS_ID),
   
   // Google Sheets GIDs (메인 전적 시트)
   GID: {
@@ -22,8 +40,9 @@ window.CONFIG = {
     DEATHNOTE: "670864805"    // 데스노트
   },
 
-  // 기본 설정
-  DEFAULT_PLAYER: "리엘",
-  POSITIONS: ["탑", "정글", "미드", "원딜", "서폿"]
-};
+    // 기본 설정
+    DEFAULT_PLAYER: "리엘",
+    POSITIONS: ["탑", "정글", "미드", "원딜", "서폿"]
+  };
+})();
 

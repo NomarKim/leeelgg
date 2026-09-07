@@ -40,7 +40,13 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
   const displayedUser = useMemo(() => {
     if (!searchedName) return null;
     const key = searchedName.trim().toLowerCase();
-    const user = userMap[key];
+    let user = userMap[key];
+    if (!user) {
+      const matchName = allUserNames.find(n => n.toLowerCase() === key || n.replace(/\s+/g, "").toLowerCase() === key.replace(/\s+/g, ""));
+      if (matchName && userMap[matchName.toLowerCase()]) {
+        user = userMap[matchName.toLowerCase()];
+      }
+    }
     if (!user) {
       return { 
         name: searchedName, 
@@ -57,7 +63,7 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
       };
     }
     return user;
-  }, [searchedName, userMap]);
+  }, [searchedName, userMap, allUserNames]);
 
   // Quick select user from autocomplete
   const handleSelectUser = (name) => {
@@ -637,6 +643,10 @@ const InventoryPage = ({ inventory = {}, onGoHome, onGoGuide, onSearchPlayer, in
                       <button
                         key={name}
                         type="button"
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          handleSelectUser(name);
+                        }}
                         onClick={() => handleSelectUser(name)}
                         className="text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between text-slate-200 hover:bg-amber-500/20 hover:text-amber-300 cursor-pointer"
                       >
