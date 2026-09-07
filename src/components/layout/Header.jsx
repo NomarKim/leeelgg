@@ -1,6 +1,44 @@
+// List of SOOP VOD Links (Exact URLs)
+const SOOP_VOD_LINKS = [
+  "https://vod.sooplive.com/player/165799269/catch",
+  "https://vod.sooplive.com/player/175843151/catch",
+  "https://vod.sooplive.com/player/168954645/catch",
+  "https://vod.sooplive.com/player/174924429/catch",
+  "https://vod.sooplive.com/player/183881179/catch",
+  "https://vod.sooplive.com/player/188490169/catch",
+  "https://vod.sooplive.com/player/204102809",
+  "https://vod.sooplive.com/player/202507153",
+  "https://vod.sooplive.com/player/193434681",
+  "https://vod.sooplive.com/player/182428189",
+  "https://vod.sooplive.com/player/179155543",
+  "https://vod.sooplive.com/player/177504187",
+  "https://vod.sooplive.com/player/174370773",
+  "https://vod.sooplive.com/player/175662185",
+  "https://vod.sooplive.com/player/175843145",
+  "https://vod.sooplive.com/player/173849937",
+  "https://vod.sooplive.com/player/165759719"
+];
+
+const getRandomVodUrl = () => {
+  const randomIndex = Math.floor(Math.random() * SOOP_VOD_LINKS.length);
+  return SOOP_VOD_LINKS[randomIndex];
+};
+
 // Application Top Header Bar
 const Header = ({ onGoHome, onSync, loading, isHome = false, appliedPlayer = "" }) => {
+  const { useState } = React;
   const { RefreshIcon, ArrowLeftIcon } = window.Icons;
+
+  // Random SOOP VOD Link state
+  const [vodUrl, setVodUrl] = useState(() => getRandomVodUrl());
+
+  const handleShuffle = (e) => {
+    const randomUrl = getRandomVodUrl();
+    setVodUrl(randomUrl);
+    if (e && e.currentTarget) {
+      e.currentTarget.href = randomUrl;
+    }
+  };
 
   return (
     <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
@@ -16,14 +54,20 @@ const Header = ({ onGoHome, onSync, loading, isHome = false, appliedPlayer = "" 
             </div>
           )}
 
-          {/* Replaced Left Icon with Clickable Circular Avatar */}
+          {/* Clickable Circular Avatar with Random SOOP VOD Link */}
           <a
-            href="https://vod.sooplive.com/player/164717847/catch"
+            href={vodUrl}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+            onMouseEnter={handleShuffle}
+            onPointerDown={handleShuffle}
+            onTouchStart={handleShuffle}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShuffle(e);
+            }}
             className="relative group/avatar inline-flex items-center cursor-pointer"
-            title="SOOP 다시보기 보러가기"
+            title="SOOP 다시보기 보러가기 (클릭할 때마다 17개 영상 중 랜덤 재생)"
           >
             <img
               src="./assets/leeel_profile.png"

@@ -271,6 +271,23 @@ function App() {
         <window.GuidePage
           onGoHome={handleGoHome}
           onNavigateToRecord={() => handleSearchFromHome(searchName, startDate, endDate)}
+          onNavigateToInventory={() => {
+            setView("inventory");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      )}
+
+      {view === "inventory" && (
+        <window.InventoryPage
+          inventory={data.inventory}
+          onGoHome={handleGoHome}
+          onGoGuide={() => {
+            setView("guide");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onSearchPlayer={(playerName) => handleSearchFromHome(playerName, startDate, endDate)}
+          initialSearchName={appliedPlayer || ""}
         />
       )}
 

@@ -7,7 +7,7 @@ const LandingSearch = ({
   initialEndDate
 }) => {
   const { useState, useMemo } = React;
-  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, TrophyIcon, ArrowRightIcon } = window.Icons;
+  const { SearchIcon, CalendarIcon, BookOpenIcon, BarChartIcon, TrophyIcon, ArrowRightIcon, GiftIcon, SparklesIcon, FlameIcon } = window.Icons;
 
   const [inputName, setInputName] = useState("");
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -19,53 +19,52 @@ const LandingSearch = ({
     const query = inputName.trim().toLowerCase();
     if (!query) return allPlayerNames.slice(0, 8);
     return allPlayerNames
-      .filter(name => name.toLowerCase().includes(query))
-      .slice(0, 10);
+      .filter((name) => name.toLowerCase().includes(query))
+      .slice(0, 8);
   }, [inputName, allPlayerNames]);
 
+  const handleSelectSuggestion = (name) => {
+    setInputName(name);
+    setShowDropdown(false);
+  };
+
   const handleSubmit = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    const target = inputName.trim();
-    if (!target) {
-      alert("조회할 소환사명(유저명)을 입력해 주세요.");
-      return;
-    }
-    onSearch(target, startDate, endDate);
+    e.preventDefault();
+    onSearch(inputName, startDate, endDate);
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10 sm:py-16 relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10 sm:py-16 max-w-5xl mx-auto w-full animate-in fade-in duration-200">
       
       {/* Background Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[120px] pointer-events-none -z-10 rounded-full" />
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-cyan-500/5 blur-[90px] pointer-events-none -z-10 rounded-full" />
       
-      {/* Hero Header Section - Clean Centered LeeeL.GG */}
-      <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-10">
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white flex items-center justify-center">
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
-            LeeeL.GG
-          </span>
+      {/* Brand Hero Banner */}
+      <div className="text-center space-y-4 mb-8 sm:mb-12">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-wide shadow-inner">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span>SOOP 방송국 공식 실시간 전적 데이터</span>
+        </div>
+        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none">
+          LeeeL<span className="text-cyan-400">.GG</span>
         </h1>
+        <p className="text-sm sm:text-base text-slate-400 max-w-lg mx-auto font-medium">
+          소환사명을 입력하고 내전 전적, 맞대결 승률, 포지션 랭킹을 한눈에 조회하세요.
+        </p>
       </div>
 
-      {/* Main OP.GG Search Box Container */}
-      <div className="w-full max-w-3xl relative z-30">
-        <form 
-          onSubmit={handleSubmit}
-          className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl shadow-black/60 space-y-4 transition hover:border-slate-700"
-        >
-          {/* Main User Input Field */}
+      {/* Main Search Panel (OP.GG / LOL.PS style) */}
+      <div className="w-full max-w-2xl bg-slate-900/90 border border-slate-800 shadow-2xl rounded-3xl p-4 sm:p-6 backdrop-blur-md relative">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* Summoner Name Input with Autocomplete */}
           <div className="relative">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-              <span className="flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                <span>소환사명 / 시참 유저 검색</span>
-              </span>
-              <span className="text-[11px] text-slate-500 font-normal">총 {allPlayerNames.length}명 등록됨</span>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+              <SearchIcon size={14} className="text-cyan-400" />
+              <span>소환사명 검색</span>
             </label>
-            
-            <div className="relative">
+            <div className="relative flex items-center">
               <input
                 type="text"
                 value={inputName}
@@ -74,58 +73,52 @@ const LandingSearch = ({
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="조회할 닉네임 또는 게임 아이디 입력 (예: 리엘)"
-                className="w-full bg-slate-950/90 border-2 border-slate-800 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 rounded-2xl pl-12 pr-4 py-4 text-base sm:text-lg text-slate-100 font-semibold placeholder-slate-500 transition duration-200 outline-none shadow-inner"
+                placeholder="소환사명을 입력하세요 (예: 리엘, 도비, 독사, 낑콩)"
+                className="w-full bg-slate-950 border-2 border-slate-800 hover:border-cyan-500/50 focus:border-cyan-500 rounded-2xl pl-12 pr-28 py-3.5 sm:py-4 text-base sm:text-lg text-slate-100 font-bold placeholder-slate-500 outline-none transition duration-200 shadow-inner"
               />
-              <div className="absolute left-4 top-4 text-slate-400">
-                <SearchIcon size={22} className="text-cyan-400" />
+              <div className="absolute left-4 text-slate-500">
+                <SearchIcon size={20} className="text-cyan-400" />
               </div>
 
-              {inputName && (
-                <button
-                  type="button"
-                  onClick={() => setInputName("")}
-                  className="absolute right-4 top-4 text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white px-2 py-1 rounded-md transition"
-                >
-                  지우기
-                </button>
-              )}
+              {/* Quick default user button */}
+              <button
+                type="button"
+                onClick={() => setInputName("리엘")}
+                className="absolute right-3 px-3 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition"
+              >
+                방장 (리엘)
+              </button>
             </div>
 
-            {/* Suggestions Dropdown */}
+            {/* Autocomplete Dropdown */}
             {showDropdown && suggestions.length > 0 && (
               <>
                 <div 
-                  className="fixed inset-0 z-40 bg-transparent"
-                  onClick={() => setShowDropdown(false)} 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setShowDropdown(false)}
                 />
-                <ul className="absolute left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-800/80 animate-in fade-in zoom-in-95 duration-150">
-                  <li className="px-4 py-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-slate-950/40">
-                    추천 유저 목록
-                  </li>
+                <div className="absolute left-0 right-0 top-full mt-2 bg-slate-900 border border-slate-750 rounded-2xl shadow-2xl overflow-hidden z-20 divide-y divide-slate-800/80 animate-in fade-in duration-150">
+                  <div className="px-4 py-2 bg-slate-950/60 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    등록된 소환사 목록
+                  </div>
                   {suggestions.map((name) => (
-                    <li key={name}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setInputName(name);
-                          setShowDropdown(false);
-                        }}
-                        className="w-full text-left px-4 py-3 hover:bg-cyan-950/40 hover:text-cyan-300 transition duration-150 flex items-center justify-between text-sm group"
-                      >
-                        <span className="font-semibold text-slate-200 group-hover:text-cyan-400">{name}</span>
-                        <span className="text-xs text-slate-500 group-hover:text-cyan-400/80 font-medium">선택하기 →</span>
-                      </button>
-                    </li>
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(name)}
+                      className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-cyan-950/30 hover:text-cyan-300 transition flex items-center justify-between group"
+                    >
+                      <span>{name}</span>
+                      <span className="text-xs text-slate-500 group-hover:text-cyan-400 transition">선택 ↵</span>
+                    </button>
                   ))}
-                </ul>
+                </div>
               </>
             )}
           </div>
 
-          {/* Date Range & Submit Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2">
-            
+          {/* Date Filter & Action Button */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-1">
             {/* Start Date */}
             <div className="sm:col-span-4">
               <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
@@ -154,13 +147,13 @@ const LandingSearch = ({
               />
             </div>
 
-            {/* Big OP.GG Action Button */}
+            {/* Big Action Button */}
             <div className="sm:col-span-4 flex items-end">
               <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 active:scale-[0.98] text-white font-extrabold py-3 px-5 rounded-xl shadow-lg shadow-cyan-950/50 transition-all duration-200 flex items-center justify-center space-x-2 text-base"
               >
-                <span>.GG 전적 조회</span>
+                <span>조회</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
                 </svg>
@@ -173,14 +166,13 @@ const LandingSearch = ({
       {/* 3 Main Category Shortcut Cards */}
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16">
         
-        {/* Card 1: LeeeL's Guide (시참 규칙) */}
+        {/* Card 1: LeeeL's Guide (시참 룰북 & 아이템 보유 현황 하위 2개 메뉴 리스트) */}
         <div 
-          onClick={() => onNavigate("guide")}
-          className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-sky-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-xl hover:shadow-sky-500/10 backdrop-blur-sm"
+          className="group/card bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-sky-500/50 rounded-2xl p-6 flex flex-col justify-between shadow-xl backdrop-blur-sm transition-all duration-300"
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition duration-300">
+              <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover/card:scale-110 transition duration-300">
                 <BookOpenIcon size={24} />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-500/30">
@@ -188,19 +180,68 @@ const LandingSearch = ({
               </span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-sky-300 transition">
+              <h3 className="text-lg font-bold text-white group-hover/card:text-sky-300 transition">
                 LeeeL's Guide
               </h3>
-              <p className="text-xs text-sky-400 font-semibold mt-0.5">리엘 방 소개 & 시참 규칙</p>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                팬참, 디코 마이크, 멸망전 점수표 밸런스 등 내전 필수 시참 룰 안내
-              </p>
+              <p className="text-xs text-sky-400 font-semibold mt-0.5">내전 규칙 & 아이템 현황</p>
             </div>
-          </div>
 
-          <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-sky-400 group-hover:translate-x-1 transition">
-            <span>시참 규칙 보기</span>
-            <ArrowRightIcon size={15} />
+            {/* 하위 2개 메뉴 리스트 */}
+            <div className="space-y-2.5 pt-2">
+              {/* Menu 1: 내전 시참 공식 룰북 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("guide");
+                }}
+                className="w-full text-left p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-sky-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-sky-950/30"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-sky-500/20 transition duration-200">
+                    <BookOpenIcon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-sky-300 transition">
+                      1. 내전 시참 공식 룰북
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      기본/세부 룰 & 방장 당부 말씀
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-sky-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={15} />
+                </div>
+              </button>
+
+              {/* Menu 2: 아이템 보유 현황 */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate("inventory");
+                }}
+                className="w-full text-left p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/60 active:scale-[0.98] transition-all duration-200 group/btn flex items-center justify-between cursor-pointer shadow-sm hover:shadow-amber-950/30"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 group-hover/btn:scale-110 group-hover/btn:bg-amber-500/20 transition duration-200">
+                    <GiftIcon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-200 group-hover/btn:text-amber-300 transition">
+                      2. 아이템 보유 현황
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      룰렛 아이템, L포인트, 칭찬/데스노트
+                    </div>
+                  </div>
+                </div>
+                <div className="p-1 rounded-md text-slate-500 group-hover/btn:text-amber-400 group-hover/btn:translate-x-0.5 transition shrink-0">
+                  <ArrowRightIcon size={15} />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 

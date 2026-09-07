@@ -1,6 +1,6 @@
 // LeeeL's Guide Page Component (공식 내전 기본 룰 + 세부 룰 + 당부 말씀 5줄 원문)
-const GuidePage = ({ onGoHome, onNavigateToRecord }) => {
-  const { BookOpenIcon, SparklesIcon, ArrowLeftIcon, ArrowRightIcon, ShieldIcon, CheckIcon, InfoIcon } = window.Icons;
+const GuidePage = ({ onGoHome, onNavigateToRecord, onNavigateToInventory }) => {
+  const { BookOpenIcon, SparklesIcon, ArrowLeftIcon, ArrowRightIcon, ShieldIcon, CheckIcon, InfoIcon, GiftIcon } = window.Icons;
 
   return (
     <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-in fade-in duration-200">
@@ -20,7 +20,16 @@ const GuidePage = ({ onGoHome, onNavigateToRecord }) => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {onNavigateToInventory && (
+            <button
+              onClick={onNavigateToInventory}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-400 transition"
+            >
+              <GiftIcon size={15} />
+              <span>아이템 보유 현황 ↗</span>
+            </button>
+          )}
           <a
             href="https://www.sooplive.com/station/msfeather/post/75383508"
             target="_blank"
