@@ -73,13 +73,47 @@ function parseCSV(text) {
   return rows;
 }
 
-// Fetch raw spreadsheet CSV without GViz typecasting drops
-async function fetchExportCsv(ssId, gid) {
-  const url = `https://docs.google.com/spreadsheets/d/${ssId}/export?format=csv&gid=${gid}`;
-  const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
-  if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-  const text = await res.text();
-  return parseCSV(text);
+// Fetch raw spreadsheet data preserving 100% of mixed text/number strings (e.g. 팀금 "9.7(두달추가)")
+async function fetchSheetData(ssId, gid) {
+  // 1. Try Google Sheets HTML table parser first (Preserves 100% raw cell text)
+  try {
+    const htmlUrl = `https://docs.google.com/spreadsheets/d/${ssId}/edit?gid=${gid}#gid=${gid}`;
+    const res = await fetch(htmlUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    });
+    if (res.ok) {
+      const html = await res.text();
+      const tableMatch = html.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/);
+      if (tableMatch) {
+        const rowMatches = tableMatch[1].match(/<tr[^>]*>([\s\S]*?)<\/tr>/g);
+        if (rowMatches && rowMatches.length > 0) {
+          const rows = rowMatches.map(r => {
+            const cells = r.match(/<td[^>]*>([\s\S]*?)<\/td>/g) || [];
+            return cells.map(c => c.replace(/<[^>]+>/g, "").trim());
+          });
+          if (rows.length > 0) return rows;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn(`HTML fetch failed for gid ${gid}, falling back to CSV:`, e);
+  }
+
+  // 2. Fallback to export CSV
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${ssId}/export?format=csv&gid=${gid}`;
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    if (res.ok) {
+      const text = await res.text();
+      return parseCSV(text);
+    }
+  } catch (e) {
+    console.warn(`CSV export failed for gid ${gid}:`, e);
+  }
+
+  return [];
 }
 
 function parseUsers(csvRows) {
@@ -441,16 +475,16 @@ module.exports = async (req, res) => {
       userData, tpData, gameData,
       r1Data, r2Data, pointsData, r44Data, tftData, praiseData, dnData
     ] = await Promise.all([
-      fetchExportCsv(SS_ID, GIDS.USER),
-      fetchExportCsv(SS_ID, GIDS.TP),
-      fetchExportCsv(SS_ID, GIDS.GAME),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE1).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE2).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.POINTS).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.ROULETTE44).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.TFT).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.PRAISE).catch(() => null),
-      fetchExportCsv(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => null)
+      fetchSheetData(SS_ID, GIDS.USER),
+      fetchSheetData(SS_ID, GIDS.TP),
+      fetchSheetData(SS_ID, GIDS.GAME),
+      fetchSheetData(INV_SS_ID, INV_GIDS.ROULETTE1).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.ROULETTE2).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.POINTS).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.ROULETTE44).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.TFT).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.PRAISE).catch(() => null),
+      fetchSheetData(INV_SS_ID, INV_GIDS.DEATHNOTE).catch(() => null)
     ]);
 
     const players = parseUsers(userData);

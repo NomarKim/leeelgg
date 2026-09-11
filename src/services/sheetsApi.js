@@ -335,12 +335,6 @@ window.SheetsApi = {
     if (!gvizData || !gvizData.table || !gvizData.table.rows) return [];
     const rows = gvizData.table.rows;
     const list = [];
-    const knownTextTeamBans = {
-      "정재": "7.26 다섯달",
-      "이간탱": "20인팀뽑(5.26)",
-      "냠냠": "8.5 세달정지 + 2달",
-      "추암": "8.21+8.30 두달"
-    };
 
     for (let i = 0; i < rows.length; i++) {
       const c = rows[i].c;
@@ -361,7 +355,7 @@ window.SheetsApi = {
         }
       }
 
-      // Col 7 (H열): 팀금 (팀장 참여 금지) 정보
+      // Col 7 (H열): 팀금 (팀장 참여 금지) 정보 (사람별 예외처리 없이 전체 텍스트형으로 파싱)
       let teamBan = null;
       if (c.length > 7 && c[7] && (c[7].v !== null || c[7].f !== null)) {
         const val = (c[7].f !== undefined && c[7].f !== null && String(c[7].f).trim() !== "") 
@@ -370,9 +364,6 @@ window.SheetsApi = {
         if (val && val !== "팀금" && val !== "null" && val !== "None") {
           teamBan = val;
         }
-      }
-      if (!teamBan && knownTextTeamBans[name]) {
-        teamBan = knownTextTeamBans[name];
       }
 
       if (deathnotes.length > 0 || teamBan) {

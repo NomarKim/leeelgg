@@ -42,15 +42,15 @@ const LandingSearch = ({
       
       {/* Brand Hero Banner */}
       <div className="text-center space-y-4 mb-8 sm:mb-12">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-wide shadow-inner">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-wide shadow-inner">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-          <span>SOOP 방송국 공식 실시간 전적 데이터</span>
+          <span>SOOP LeeeL 방송국 모든 정보</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none">
           LeeeL<span className="text-cyan-400">.GG</span>
         </h1>
-        <p className="text-sm sm:text-base text-slate-400 max-w-lg mx-auto font-medium">
-          소환사명을 입력하고 내전 전적, 맞대결 승률, 포지션 랭킹을 한눈에 조회하세요.
+        <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto font-medium leading-relaxed">
+          소환사의 기록과 명예가 머무는 공간, <strong className="text-cyan-300 font-bold">LeeeL.GG</strong>에서 모든 정보를 탐색하세요.
         </p>
       </div>
 
