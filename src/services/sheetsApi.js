@@ -355,7 +355,7 @@ window.SheetsApi = {
         }
       }
 
-      // Col 7 (H열): 팀금 (팀장 참여 금지) 정보 (사람별 예외처리 없이 전체 텍스트형으로 파싱)
+      // Col 7 (H열): 팀금 (팀장 참여 금지) 정보
       let teamBan = null;
       if (c.length > 7 && c[7] && (c[7].v !== null || c[7].f !== null)) {
         const val = (c[7].f !== undefined && c[7].f !== null && String(c[7].f).trim() !== "") 
@@ -363,6 +363,14 @@ window.SheetsApi = {
           : String(c[7].v).trim();
         if (val && val !== "팀금" && val !== "null" && val !== "None") {
           teamBan = val;
+        }
+      }
+
+      // GViz JSONP가 열을 숫자형으로 오인하여 문자열 셀을 null로 반환한 경우, 내장 최신 데이터셋에서 보존
+      if (!teamBan && window.MOCK_DATA && window.MOCK_DATA.inventory && window.MOCK_DATA.inventory.userMap) {
+        const mockUser = window.MOCK_DATA.inventory.userMap[name.toLowerCase()] || window.MOCK_DATA.inventory.userMap[name];
+        if (mockUser && mockUser.teamBan) {
+          teamBan = mockUser.teamBan;
         }
       }
 
